@@ -2,3 +2,5 @@ build/
 *.o
 *.exe
 *.out
+test_runner
+main

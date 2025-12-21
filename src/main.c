@@ -1,33 +1,31 @@
-#include <ncurses.h>
-#include <unistd.h>
+#include "ui.h"
+#include "app.h"
 
 #define DELAY 35000
 
-int main(int argc, char *argv[]) {
-  int x = 0,
-      y = 0;
+int main(int argc, char *argv[])
+{
+  (void)argc;
+  (void)argv;
 
-  int max_x = 0,
-      max_y = 0;
+  Appstate s;
+  ScreenPos pos;
 
-  int next_x = 0;
+  app_init(&s);
+  ui_init();
 
-  int direction = 1;
+  ui_set_screen_pos(&pos, 0, 0);
 
-  initscr();
-  noecho();
-  curs_set(TRUE);
+  while (s.running) {
+    ui_clear();
+    ui_draw_text(&pos, "Hello curses");
+    ui_refresh();
 
-  getmaxyx(stdscr, max_y, max_x);
+    UiKey key = ui_get_key();
+    app_handle_key(&s, key);
+  }
 
-  x = max_x / 2;
-  y = max_y / 2;
-
-  mvprintw(y, x, "HERE WE HAVE some text");
-  refresh();
-  getch();
-
-  endwin();
+  ui_shutdown();
 
   return 0;
 }

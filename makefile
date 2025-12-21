@@ -1,34 +1,59 @@
 CC := gcc
 
-CFLAGS := -Wall -Wextra -std=c99
-CFLAGS += -Isrc -Itests -Iunity/src
-TEST_CFLAGS := $(CFLAGS) -DUNITY_OUTPUT_COLOR
-
+# ---------- Flags ----------
+COMMON_CFLAGS := -Wall -Wextra -std=c99 -Isrc
+APP_CFLAGS := $(COMMON_CFLAGS)
+TEST_CFLAGS := $(COMMON_CFLAGS) -Itests -Iunity/src -DUNITY_OUTPUT_COLOR
 
 LDFLAGS := -lncurses
 
-# Production files
+# ---------- Sources ----------
+SRC := $(wildcard src/*.c)
+
 APP := main
 APP_MAIN := src/main.c
-APP_SRC := $(filter-out $(APP_MAIN), $(wildcard src/*.c))
+APP_SRC := $(filter-out $(APP_MAIN), $(SRC))
 
-# Test files
-TEST_APP := test_runner
-TEST_SRC := $(wildcard tests/test_*.c)
+UI_REAL := src/ui.c
+UI_FAKE := tests/ui_fake.c
+
 UNITY_SRC := unity/src/unity.c
+TEST_APP := test_runner
 
-# Default target
+# ---------- Paths ----------
+TEST_DIR := tests
+TEST_RUNNER := $(TEST_DIR)/test_runner.c
+UNITY_AUTO := unity/auto/generate_test_runner.rb
+TEST_FILES := $(wildcard $(TEST_DIR)/test_*.c)
+
+TEST_SRC := \
+	$(filter-out $(APP_MAIN) $(UI_REAL), $(SRC)) \
+	$(UI_FAKE) \
+	$(TEST_FILES) \
+	$(UNITY_SRC)
+
+# ---------- Test files ----------
+TEST_FILES := $(wildcard $(TEST_DIR)/test_*.c)
+
+# ---------- Targets ----------
+.PHONY: all run test clean
+
 all: $(APP)
 
-# Build production executable
-$(APP): $(APP_MAIN) $(APP_SRC)
-	$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS)
+run: $(APP)
+	./$(APP)
 
-# Build test executable
-$(TEST_APP): $(TEST_SRC) $(APP_SRC) $(UNITY_SRC)
+$(APP): $(APP_MAIN) $(APP_SRC)
+	$(CC) $(APP_CFLAGS) $^ -o $@ $(LDFLAGS)
+
+# Generate test_runner.c from all test_*.c files
+$(TEST_RUNNER): $(TEST_FILES)
+	@echo "Generating Unity test runner..."
+	ruby $(UNITY_AUTO) $(TEST_FILES) $@
+
+$(TEST_APP): $(TEST_SRC) $(TEST_RUNNER)
 	$(CC) $(TEST_CFLAGS) $^ -o $@
 
-# Build + run tests
 test: $(TEST_APP)
 	./$(TEST_APP)
 
