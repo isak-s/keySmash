@@ -1,23 +1,36 @@
-CFLAGS=-Wall
-LDFLAGS=-lncurses
-
 CC := gcc
-CFLAGS := -Wall -Wextra -std=c99 -Isrc -Itests
 
-SRC := $(wildcard src/*.c)
-TESTS := $(wildcard tests/test_*.c)
-UNITY := tests/unity.c
+CFLAGS := -Wall -Wextra -std=c99
+CFLAGS += -Isrc -Itests -Iunity/src
+TEST_CFLAGS := $(CFLAGS) -DUNITY_OUTPUT_COLOR
 
-TESTOBJS := $(SRC:.c=.o) $(TESTS:.c=.o) $(UNITY:.c=.o)
 
-all: src/main.c
-	gcc -Wall src/main.c -o main -lncurses
+LDFLAGS := -lncurses
 
-test_runner: $(TESTOBJS)
-	$(CC) $(CFLAGS) $^ -o $@
+# Production files
+APP := main
+APP_MAIN := src/main.c
+APP_SRC := $(filter-out $(APP_MAIN), $(wildcard src/*.c))
 
-demo: demo.c
-	gcc -Wall demo.c -o demo -lncurses
+# Test files
+TEST_APP := test_runner
+TEST_SRC := $(wildcard tests/test_*.c)
+UNITY_SRC := unity/src/unity.c
+
+# Default target
+all: $(APP)
+
+# Build production executable
+$(APP): $(APP_MAIN) $(APP_SRC)
+	$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS)
+
+# Build test executable
+$(TEST_APP): $(TEST_SRC) $(APP_SRC) $(UNITY_SRC)
+	$(CC) $(TEST_CFLAGS) $^ -o $@
+
+# Build + run tests
+test: $(TEST_APP)
+	./$(TEST_APP)
 
 clean:
-	rm -rf demo
+	rm -f $(APP) $(TEST_APP)
