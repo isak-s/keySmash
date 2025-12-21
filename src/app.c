@@ -1,4 +1,5 @@
 #include "app.h"
+#include "ui.h"
 
 void app_init(Appstate* s)
 {
@@ -16,7 +17,7 @@ void app_handle_key(Appstate* s, int key)
     case 'k':
         s->selected--;
         break;
-    case 'q':
+    case UI_KEY_QUIT:
         s->running = 0;
 
     default:

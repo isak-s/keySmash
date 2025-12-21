@@ -20,7 +20,7 @@ UiKey ui_get_key(void)
     switch (ch)
     {
     case KEY_UP: return UI_KEY_UP;
-
+    case 'q': return UI_KEY_QUIT;
     default:
         return UI_KEY_UNKNOWN;
     }

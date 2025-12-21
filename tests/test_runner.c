@@ -3,6 +3,7 @@
 /*=======Automagically Detected Files To Include=====*/
 #include "unity.h"
 #include "app.h"
+#include "ui.h"
 
 /*=======Structure Used By Test Runner=====*/
 struct UnityRunTestParameters
@@ -90,10 +91,10 @@ int main(void)
 
   run_test_params_arr[0].func = test_quit_key_stops_app;
   run_test_params_arr[0].name = "test_quit_key_stops_app";
-  run_test_params_arr[0].line_num = 4;
+  run_test_params_arr[0].line_num = 5;
   run_test_params_arr[1].func = test_down_key_moves_selection;
   run_test_params_arr[1].name = "test_down_key_moves_selection";
-  run_test_params_arr[1].line_num = 14;
+  run_test_params_arr[1].line_num = 15;
 
   for (int i = 0; i < number_of_tests; i++)
   {
