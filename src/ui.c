@@ -26,6 +26,17 @@ UiKey ui_get_key(void)
     }
 }
 
+void ui_init_screen_pos(ScreenPos* pos)
+{
+  pos->x = 0;
+  pos->y = 0;
+}
+
+void ui_get_size(int* w, int* h)
+{
+    getmaxyx(stdscr, h, w);
+}
+
 void ui_set_screen_pos(ScreenPos* pos, int x, int y)
 {
     pos->x = x;

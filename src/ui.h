@@ -15,6 +15,8 @@ typedef struct {
   int y;
 } ScreenPos;
 
+void ui_init_screen_pos(ScreenPos* pos);
+
 void ui_set_screen_pos(ScreenPos* pos, int x, int y);
 
 // void ui_draw_word(const char* word, ScreenPos pos);
@@ -28,5 +30,7 @@ void ui_clear(void);
 
 void ui_draw_text(const ScreenPos* pos, const char* text);
 void ui_refresh(void);
+
+void ui_get_size(int* w, int* h);
 
 #endif

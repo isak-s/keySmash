@@ -1,39 +1,31 @@
 CC := gcc
 
 # ---------- Flags ----------
-COMMON_CFLAGS := -Wall -Wextra -std=c99 -Isrc
-APP_CFLAGS := $(COMMON_CFLAGS)
-TEST_CFLAGS := $(COMMON_CFLAGS) -Itests -Iunity/src -DUNITY_OUTPUT_COLOR
-
+COMMON_CFLAGS := -Wall -Wextra -std=c99 -Isrc -Itests -Iunity/src
+TEST_CFLAGS := $(COMMON_CFLAGS) -DUNITY_OUTPUT_COLOR
 LDFLAGS := -lncurses
 
-# ---------- Sources ----------
+# ---------- App ----------
 SRC := $(wildcard src/*.c)
-
 APP := main
 APP_MAIN := src/main.c
 APP_SRC := $(filter-out $(APP_MAIN), $(SRC))
 
-UI_REAL := src/ui.c
-UI_FAKE := tests/ui_fake.c
-
+# ---------- Unity ----------
 UNITY_SRC := unity/src/unity.c
-TEST_APP := test_runner
 
-# ---------- Paths ----------
+# ---------- Tests ----------
 TEST_DIR := tests
-TEST_RUNNER := $(TEST_DIR)/test_runner.c
-UNITY_AUTO := unity/auto/generate_test_runner.rb
 TEST_FILES := $(wildcard $(TEST_DIR)/test_*.c)
 
-TEST_SRC := \
-	$(filter-out $(APP_MAIN) $(UI_REAL), $(SRC)) \
-	$(UI_FAKE) \
-	$(TEST_FILES) \
+# One executable per test file
+TEST_BINS := $(TEST_FILES:$(TEST_DIR)/%.c=$(TEST_DIR)/%)
+
+# Sources used by tests (shared)
+TEST_SUPPORT_SRC := \
+	$(filter-out $(APP_MAIN) src/ui.c, $(SRC)) \
+	tests/ui_fake.c \
 	$(UNITY_SRC)
-
-# ---------- Test files ----------
-TEST_FILES := $(wildcard $(TEST_DIR)/test_*.c)
 
 # ---------- Targets ----------
 .PHONY: all run test clean
@@ -43,19 +35,22 @@ all: $(APP)
 run: $(APP)
 	./$(APP)
 
+# ---------- App ----------
 $(APP): $(APP_MAIN) $(APP_SRC)
-	$(CC) $(APP_CFLAGS) $^ -o $@ $(LDFLAGS)
+	$(CC) $(COMMON_CFLAGS) $^ -o $@ $(LDFLAGS)
 
-# Generate test_runner.c from all test_*.c files
-$(TEST_RUNNER): $(TEST_FILES)
-	@echo "Generating Unity test runner..."
-	ruby $(UNITY_AUTO) $(TEST_FILES) $@
+# ---------- Build each test ----------
+$(TEST_DIR)/%: $(TEST_DIR)/%.c $(TEST_SUPPORT_SRC)
+	@echo "Building $@"
+	$(CC) $(TEST_CFLAGS) $^ -o $@ $(LDFLAGS)
 
-$(TEST_APP): $(TEST_SRC) $(TEST_RUNNER)
-	$(CC) $(TEST_CFLAGS) $^ -o $@
-
-test: $(TEST_APP)
-	./$(TEST_APP)
+# ---------- Run all tests ----------
+test: $(TEST_BINS)
+	@set -e; \
+	for t in $(TEST_BINS); do \
+		echo "Running $$t"; \
+		./$$t; \
+	done
 
 clean:
-	rm -f $(APP) $(TEST_APP)
+	rm -f $(APP) $(TEST_BINS)

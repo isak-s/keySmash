@@ -1,5 +1,6 @@
 #include "app.h"
 #include "ui.h"
+#include "stdbool.h"
 
 void app_init(Appstate* s)
 {
@@ -11,10 +12,10 @@ void app_handle_key(Appstate* s, int key)
 {
     switch (key)
     {
-    case 'j':
+    case UI_KEY_DOWN:
         s->selected++;
         break;
-    case 'k':
+    case UI_KEY_UP:
         s->selected--;
         break;
     case UI_KEY_QUIT:
@@ -23,4 +24,14 @@ void app_handle_key(Appstate* s, int key)
     default:
         break;
     }
+}
+
+bool is_app_screen_resized()
+{
+    return false;
+}
+
+void on_app_screen_resized(Appstate* s)
+{
+    ui_get_size(&s->window_width, &s->window_height);
 }

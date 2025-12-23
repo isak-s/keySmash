@@ -13,11 +13,12 @@ int main(int argc, char *argv[])
 
   app_init(&s);
   ui_init();
-
-  ui_set_screen_pos(&pos, 0, 0);
+  ui_init_screen_pos(&pos);
+  ui_set_screen_pos(&pos, 10, 20);
 
   while (s.running) {
     ui_clear();
+    // if (window_resized())
     ui_draw_text(&pos, "Hello curses");
     ui_refresh();
 
