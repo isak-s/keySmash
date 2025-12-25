@@ -1,6 +1,7 @@
 #include "app.h"
 #include "ui.h"
 #include "stdbool.h"
+#include "menu.h"
 
 void app_init(Appstate* s)
 {
@@ -34,4 +35,18 @@ bool is_app_screen_resized()
 void on_app_screen_resized(Appstate* s)
 {
     ui_get_size(&s->window_width, &s->window_height);
+}
+
+void screen_draw(const Screen* screen)
+{
+    for (size_t i = 0; i < screen->count; i++) {
+        screen->elements[i].draw(&screen->elements[i]);
+    }
+}
+
+void screen_resize(const Screen* screen, int w, int h)
+{
+    for (size_t i = 0; i < screen->count; i++) {
+        screen->elements[i].resize(&screen->elements[i], w, h);
+    }
 }

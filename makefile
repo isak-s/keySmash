@@ -5,9 +5,13 @@ COMMON_CFLAGS := -Wall -Wextra -std=c99 -Isrc -Itests -Iunity/src
 TEST_CFLAGS := $(COMMON_CFLAGS) -DUNITY_OUTPUT_COLOR
 LDFLAGS := -lncurses
 
+# ---------- Output dirs ----------
+BIN_DIR := build/bin
+TEST_BIN_DIR := build/tests
+
 # ---------- App ----------
 SRC := $(wildcard src/*.c)
-APP := main
+APP := $(BIN_DIR)/main
 APP_MAIN := src/main.c
 APP_SRC := $(filter-out $(APP_MAIN), $(SRC))
 
@@ -19,7 +23,7 @@ TEST_DIR := tests
 TEST_FILES := $(wildcard $(TEST_DIR)/test_*.c)
 
 # One executable per test file
-TEST_BINS := $(TEST_FILES:$(TEST_DIR)/%.c=$(TEST_DIR)/%)
+TEST_BINS := $(TEST_FILES:$(TEST_DIR)/%.c=$(TEST_BIN_DIR)/%)
 
 # Sources used by tests (shared)
 TEST_SUPPORT_SRC := \
@@ -28,9 +32,12 @@ TEST_SUPPORT_SRC := \
 	$(UNITY_SRC)
 
 # ---------- Targets ----------
-.PHONY: all run test clean
+.PHONY: all run test clean dirs
 
-all: $(APP)
+all: dirs $(APP)
+
+dirs:
+	mkdir -p $(BIN_DIR) $(TEST_BIN_DIR)
 
 run: $(APP)
 	./$(APP)
@@ -40,12 +47,12 @@ $(APP): $(APP_MAIN) $(APP_SRC)
 	$(CC) $(COMMON_CFLAGS) $^ -o $@ $(LDFLAGS)
 
 # ---------- Build each test ----------
-$(TEST_DIR)/%: $(TEST_DIR)/%.c $(TEST_SUPPORT_SRC)
+$(TEST_BIN_DIR)/%: $(TEST_DIR)/%.c $(TEST_SUPPORT_SRC)
 	@echo "Building $@"
 	$(CC) $(TEST_CFLAGS) $^ -o $@ $(LDFLAGS)
 
 # ---------- Run all tests ----------
-test: $(TEST_BINS)
+test: dirs $(TEST_BINS)
 	@set -e; \
 	for t in $(TEST_BINS); do \
 		echo "Running $$t"; \
@@ -53,4 +60,4 @@ test: $(TEST_BINS)
 	done
 
 clean:
-	rm -f $(APP) $(TEST_BINS)
+	rm -rf build

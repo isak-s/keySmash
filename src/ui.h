@@ -1,6 +1,8 @@
 #ifndef UI_H
 #define UI_H
 
+#include "screenpos.h"
+
 typedef enum
 {
     UI_KEY_UP,
@@ -9,11 +11,6 @@ typedef enum
     UI_KEY_UNKNOWN
 
 } UiKey;
-
-typedef struct {
-  int x;
-  int y;
-} ScreenPos;
 
 void ui_init_screen_pos(ScreenPos* pos);
 
