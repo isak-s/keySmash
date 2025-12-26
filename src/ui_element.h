@@ -1,18 +1,17 @@
 #ifndef UI_ELEMENT_H
 #define UI_ELEMENT_H
-#include "screenpos.h"
+
+#include <stddef.h>
 
 typedef struct UIElement UIElement;
 
-typedef void (*UIDrawFn)(const UIElement* el);
-typedef void (*UIResizeFn)(UIElement* el, int w, int h);
+typedef void (*UIDrawFn)(UIElement* el, void* ctx);
 
 struct UIElement {
-    ScreenPos  pos;
-    UIDrawFn draw;
-    UIResizeFn resize;
-    void       *impl;
+    UIDrawFn draw;  // ctx is backend-specific (e.g., UIPanelCurses*)
+    void* impl;     // opaque pointer to element data
 };
+
 #endif
 /*
 

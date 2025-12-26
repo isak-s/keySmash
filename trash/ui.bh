@@ -12,10 +12,6 @@ typedef enum
 
 } UiKey;
 
-void ui_init_screen_pos(ScreenPos* pos);
-
-void ui_set_screen_pos(ScreenPos* pos, int x, int y);
-
 // void ui_draw_word(const char* word, ScreenPos pos);
 
 void ui_init(void);

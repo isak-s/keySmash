@@ -28,10 +28,11 @@ UiKey ui_get_key(void)
 
 void ui_get_size(int* w, int* h)
 {
-    getmaxyx(stdscr, h, w);
+    int rows, cols;
+    getmaxyx(stdscr, rows, cols);
+    *w = cols;
+    *h = rows;
 }
-
-
 
 void ui_draw_text(const ScreenPos* pos, const char* text)
 {

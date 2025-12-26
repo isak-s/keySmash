@@ -3,10 +3,12 @@
 
 #include "ui_element.h"
 #include "menu.h"
+#include "ui_panel_curses.h"
 
-UIElement ui_menu_create(Menu *menu, ScreenPos pos);
+// Draw MenuItem inside a UIPanelCurses
+void menu_item_draw_adapter(UIElement* el, void* ctx);
 
-UIElement ui_label_create(Label* label, ScreenPos pos);
+// Create UIElement for a MenuItem
+UIElement ui_menu_item_create(MenuItem* item);
 
-UIElement ui_menu_item_create(MenuItem* Menu_item, ScreenPos pos);
 #endif

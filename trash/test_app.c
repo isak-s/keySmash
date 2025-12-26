@@ -39,10 +39,11 @@ void test_up_key_moves_selection(void)
 void test_resize_repositions_ui(void)
 {
     Appstate s;
+    Screen scr;
 
     ui_fake_resize(40, 10);
 
-    on_app_screen_resized(&s);
+    // on_app_screen_resized(&s, &scr);
 
     TEST_ASSERT_EQUAL_INT32(40, s.window_width);
     TEST_ASSERT_EQUAL_INT32(10, s.window_height);

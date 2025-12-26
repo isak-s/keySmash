@@ -1,0 +1,15 @@
+#ifndef UI_BORDER_H
+#define UI_BORDER_H
+
+#include <stdbool.h>
+
+typedef struct {
+    bool enabled;
+    char ls, rs, ts, bs;
+    char tl, tr, bl, br;
+} UIBorder;
+
+extern const UIBorder UI_BORDER_NONE;
+extern const UIBorder UI_BORDER_SINGLE;
+
+#endif

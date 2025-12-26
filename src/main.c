@@ -1,32 +1,48 @@
-#include "ui.h"
-#include "app.h"
+#include <ncurses.h>
+#include "ui_panel_curses.h"
+#include "menu_adapter.h"
 
-#define DELAY 35000
+int main(void) {
+    initscr();
+    cbreak();
+    noecho();
+    keypad(stdscr, TRUE);
+    refresh();
+    // logical panel
+    UIPanel panel = {
+        .width = 30,
+        .height = 10,
+        .x = 5,
+        .y = 5,
+        .element_count = 2
+    };
 
-int main(int argc, char *argv[])
-{
-  (void)argc;
-  (void)argv;
+    MenuItem item1 = { .text = "Start", .enabled = true };
+    MenuItem item2 = { .text = "Quit", .enabled = true };
 
-  Appstate s;
-  ScreenPos pos;
+    UIElement elements[2];
+    elements[0] = ui_menu_item_create(&item1);
+    elements[1] = ui_menu_item_create(&item2);
 
-  app_init(&s);
-  ui_init();
-  ui_init_screen_pos(&pos);
-  ui_set_screen_pos(&pos, 10, 20);
+    panel.elements = elements;
 
-  while (s.running) {
-    ui_clear();
-    // if (window_resized())
-    ui_draw_text(&pos, "Hello curses");
-    ui_refresh();
+    // curses wrapper
+    UIPanelCurses pc = ui_panel_curses_create(&panel);
 
-    UiKey key = ui_get_key();
-    app_handle_key(&s, key);
-  }
+    ui_panel_curses_draw(&pc);
 
-  ui_shutdown();
+    wrefresh(pc.win);
 
-  return 0;
+    int cx = 20;
+    int cy = 20;
+    getch();
+    char c = ' ';
+    while(c != 'q') {
+        wmove(stdscr, cx++, cy++);
+        char c = getch();
+    }
+
+    ui_panel_curses_destroy(&pc);
+    endwin();
+    return 0;
 }
