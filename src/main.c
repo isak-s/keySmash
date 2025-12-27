@@ -2,6 +2,31 @@
 #include "ui_panel_curses.h"
 #include "menu_adapter.h"
 
+typedef struct DrawCommand DrawCommand;
+
+typedef void (*DrawCharacterFn)(DrawCommand* self, WINDOW* win);
+
+typedef struct DrawCommand {
+    DrawCharacterFn execute;
+    char c;
+};
+
+void draw_default_formatted_char(DrawCommand* self, WINDOW* win)
+{
+    waddch(win, self->c);
+}
+
+DrawCommand new_draw_char_command(char c)
+{
+    DrawCommand dc;
+    dc.execute = draw_default_formatted_char;
+    dc.c = c;
+    return dc;
+}
+
+
+
+
 int main(void) {
     initscr();
     cbreak();
@@ -54,13 +79,29 @@ int main(void) {
     ui_panel_curses_draw(&ta);
     wrefresh(ta.win);
 
-    int cx = 20;
-    int cy = 20;
-    getch();
+    wmove(ta.win, 1, 1);
+    DrawCommand dc = new_draw_char_command('A');
+    dc.execute(&dc, ta.win);
+    wmove(ta.win, 1, 4);
+    dc = new_draw_char_command('B');
+
+    dc.execute(&dc, ta.win);
+    wrefresh(ta.win);
+
+
+    int cx = 1;
+    int cy = 2;
     char c = ' ';
     while(c != 'q') {
-        wmove(stdscr, cx++, cy++);
-        char c = getch();
+        c = getch();
+        wmove(ta.win, cy, cx++);
+        waddch(ta.win, c);
+        wrefresh(ta.win);
+
+        if (cx >= ta.panel->width-1) { // - 1 for border
+            cy++;
+            cx = 1;
+        }
     }
 
     ui_panel_curses_destroy(&pc);
