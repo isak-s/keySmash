@@ -1,31 +1,62 @@
 #include <ncurses.h>
 #include "ui_panel_curses.h"
 #include "menu_adapter.h"
+#include "time.h"
+#include <stdlib.h>
+#include "ui_commands.h"
 
-typedef struct DrawCommand DrawCommand;
+// make this a contract and then have subtypes such as englishtest and such maybe
+typedef struct {
+    long  start_timestamp;
+    char* text;
+    char* language;
+    int idx;
+} TypingTest;
 
-typedef void (*DrawCharacterFn)(DrawCommand* self, WINDOW* win);
+TypingTest new_english_typing_test(const char* text)
+{
+    return (TypingTest){
+        .idx = 0,
+        .language = "english",
+        .text = text,
+        .start_timestamp = time(NULL)
+    };
+}
 
-typedef struct DrawCommand {
-    DrawCharacterFn execute;
-    char c;
+typedef struct TypingTestInput TypingTestInput;
+
+typedef DrawCommand (*GenerateCommandFn)(TypingTestInput);
+
+/* this should be the template */
+typedef struct TypingTestInput {
+    bool is_correct;
+    int  time_since_test_start;
+    char inputted;
 };
 
-void draw_default_formatted_char(DrawCommand* self, WINDOW* win)
+DrawCommand draw_command_from_input(TypingTestInput* inp)
 {
-    waddch(win, self->c);
+    if (inp->inputted == KEY_BACKSPACE || inp->inputted == KEY_DC) {
+        return new_delete_char_command();
+    } else if (!inp->is_correct) {
+        return new_draw_char_command(inp->inputted);  // draw_incorrect_char_command
+    } else {
+        return new_draw_char_command(inp->inputted);
+    }
 }
 
-DrawCommand new_draw_char_command(char c)
+/* This function will await until a char is inputted. Halts the rest of the program!!! */
+TypingTestInput get_input(TypingTest* tt)
 {
-    DrawCommand dc;
-    dc.execute = draw_default_formatted_char;
-    dc.c = c;
-    return dc;
+    TypingTestInput input;
+    input.inputted = getch();
+    if (input.inputted == KEY_BACKSPACE || input.inputted == KEY_DC) {
+        // do something
+    }
+    input.time_since_test_start = time(NULL) - tt->start_timestamp;
+    input.is_correct = (tt->text[tt->idx] == input.inputted);
+    return input;
 }
-
-
-
 
 int main(void) {
     initscr();
@@ -89,13 +120,20 @@ int main(void) {
     wrefresh(ta.win);
 
 
+
+    TypingTest tt = new_english_typing_test("this is an example typing test");
+    // iterate over all chars in the text, and create draw commands for all of them.
+    // Then reset index, and the user types over the already written text, but in a different color.
+
     int cx = 1;
     int cy = 2;
     char c = ' ';
     while(c != 'q') {
-        c = getch();
         wmove(ta.win, cy, cx++);
-        waddch(ta.win, c);
+        TypingTestInput inp = get_input(&tt);
+        DrawCommand dc = draw_command_from_input(&inp);
+        dc.execute(&dc, ta.win);
+
         wrefresh(ta.win);
 
         if (cx >= ta.panel->width-1) { // - 1 for border
