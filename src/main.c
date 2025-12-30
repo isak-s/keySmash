@@ -5,12 +5,20 @@
 #include <stdlib.h>
 #include "ui_commands.h"
 
+#include "menu.h"
+
+
 // make this a contract and then have subtypes such as englishtest and such maybe
+
+#include "fifo_queue.h"
 typedef struct {
     long  start_timestamp;
     char* text;
     char* language;
     int idx;
+
+    FifoQueue draw_queue;
+    FifoQueue input_history;
 } TypingTest;
 
 TypingTest new_english_typing_test(char* text)
@@ -19,7 +27,9 @@ TypingTest new_english_typing_test(char* text)
         .idx = 0,
         .language = "english",
         .text = text,
-        .start_timestamp = time(NULL)
+        .start_timestamp = time(NULL),
+        .draw_queue = fifo_q_new(),
+        .input_history = fifo_q_new()
     };
 }
 
@@ -63,34 +73,10 @@ int main(void) {
     int max_x, max_y;
     getmaxyx(stdscr, max_y, max_x);
 
-    int element_count = 4;
-    UIPanel menu = {
-        .width = max_x-10,  // 5 char padding on each side
-        .height = element_count + 2, // for border
-        .x = 5,
-        .y = 2,
-        .element_count = element_count
-    };
+    UIPanelCurses main_menu = menu_main_create(max_x);
 
-    MenuItem item1 = { .text = "Start typing", .enabled = true };
-    MenuItem item2 = { .text = "Statistics", .enabled = true };
-    MenuItem item4 = { .text = "Mode", .enabled = true };
-    MenuItem item3 = { .text = "QUIT", .enabled = true };
-
-    UIElement elements[element_count];
-    elements[0] = ui_menu_item_create(&item1);
-    elements[1] = ui_menu_item_create(&item2);
-    elements[2] = ui_menu_item_create(&item4);
-    elements[3] = ui_menu_item_create(&item3);
-
-    menu.elements = elements;
-
-    // curses wrapper main menu
-    UIPanelCurses pc = ui_panel_curses_create(&menu);
-
-    ui_panel_curses_draw(&pc);
-
-    wrefresh(pc.win);
+    ui_panel_curses_draw(&main_menu);
+    wrefresh(main_menu.win);
 
     UIPanel test_area = {
         .width = max_x - 10,
@@ -114,8 +100,6 @@ int main(void) {
     dc.execute(&dc, ta.win);
     wrefresh(ta.win);
 
-
-
     TypingTest tt = new_english_typing_test("this is an example typing test");
     // iterate over all chars in the text, and create draw commands for all of them.
     // Then reset index, and the user types over the already written text, but in a different color.
@@ -136,8 +120,10 @@ int main(void) {
             cx = 1;
         }
     }
-
-    ui_panel_curses_destroy(&pc);
+    free(main_menu.panel->elements);
+    // free(main_menu.panel);
+    ui_panel_curses_destroy(&main_menu);
+    ui_panel_curses_destroy(&ta);
     endwin();
     return 0;
 }

@@ -5,12 +5,12 @@
 #include <ncurses.h>
 
 typedef struct {
-    const UIPanel* panel;  // pointer to logical panel
+    UIPanel* panel;  // pointer to logical panel
     WINDOW* win;           // curses window
 } UIPanelCurses;
 
 // Create curses wrapper for a panel
-UIPanelCurses ui_panel_curses_create(const UIPanel* panel);
+UIPanelCurses ui_panel_curses_create(UIPanel* panel);
 
 // Draw panel + all elements
 void ui_panel_curses_draw(const UIPanelCurses* panel_curses);

@@ -1,6 +1,7 @@
 #include "menu_adapter.h"
 #include <ncurses.h>
 #include <string.h>
+#include <stdlib.h>
 
 void menu_item_draw_adapter(UIElement* el, void* ctx) {
     static int row = 1;  // TEMP: reset per frame later
@@ -12,8 +13,10 @@ void menu_item_draw_adapter(UIElement* el, void* ctx) {
 }
 
 UIElement ui_menu_item_create(MenuItem* item) {
+    MenuItem* copy = malloc(sizeof(MenuItem));
+    *copy = *item;
     UIElement el;
-    el.impl = item;
+    el.impl = copy;
     el.draw = menu_item_draw_adapter;
     return el;
 }
