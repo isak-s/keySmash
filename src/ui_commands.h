@@ -7,7 +7,7 @@ typedef struct DrawCommand DrawCommand;
 
 typedef void (*DrawCharacterFn)(DrawCommand* self, WINDOW* win);
 
-typedef struct DrawCommand {
+struct DrawCommand {
     DrawCharacterFn execute;
     char c;
 };

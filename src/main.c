@@ -13,7 +13,7 @@ typedef struct {
     int idx;
 } TypingTest;
 
-TypingTest new_english_typing_test(const char* text)
+TypingTest new_english_typing_test(char* text)
 {
     return (TypingTest){
         .idx = 0,
@@ -23,16 +23,13 @@ TypingTest new_english_typing_test(const char* text)
     };
 }
 
-typedef struct TypingTestInput TypingTestInput;
-
-typedef DrawCommand (*GenerateCommandFn)(TypingTestInput);
-
 /* this should be the template */
 typedef struct TypingTestInput {
     bool is_correct;
     int  time_since_test_start;
-    char inputted;
-};
+    // has to be an int since there are other non-alphabetic keycodes.
+    int inputted;
+} TypingTestInput;
 
 DrawCommand draw_command_from_input(TypingTestInput* inp)
 {
@@ -50,9 +47,6 @@ TypingTestInput get_input(TypingTest* tt)
 {
     TypingTestInput input;
     input.inputted = getch();
-    if (input.inputted == KEY_BACKSPACE || input.inputted == KEY_DC) {
-        // do something
-    }
     input.time_since_test_start = time(NULL) - tt->start_timestamp;
     input.is_correct = (tt->text[tt->idx] == input.inputted);
     return input;
@@ -65,11 +59,12 @@ int main(void) {
     keypad(stdscr, TRUE);
     refresh();
     // logical panel
+
     int max_x, max_y;
     getmaxyx(stdscr, max_y, max_x);
 
     int element_count = 4;
-    UIPanel panel = {
+    UIPanel menu = {
         .width = max_x-10,  // 5 char padding on each side
         .height = element_count + 2, // for border
         .x = 5,
@@ -88,10 +83,10 @@ int main(void) {
     elements[2] = ui_menu_item_create(&item4);
     elements[3] = ui_menu_item_create(&item3);
 
-    panel.elements = elements;
+    menu.elements = elements;
 
-    // curses wrapper
-    UIPanelCurses pc = ui_panel_curses_create(&panel);
+    // curses wrapper main menu
+    UIPanelCurses pc = ui_panel_curses_create(&menu);
 
     ui_panel_curses_draw(&pc);
 

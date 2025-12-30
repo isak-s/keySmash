@@ -28,9 +28,8 @@ TEST_BINS := $(TEST_FILES:$(TEST_DIR)/%.c=$(TEST_BIN_DIR)/%)
 # Sources used by tests (shared)
 TEST_SUPPORT_SRC := \
 	$(filter-out $(APP_MAIN) src/ui.c, $(SRC)) \
-	tests/ui_fake.c \
 	$(UNITY_SRC)
-
+	# tests/ui_fake.c
 # ---------- Targets ----------
 .PHONY: all run test clean dirs
 

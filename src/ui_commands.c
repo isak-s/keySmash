@@ -9,6 +9,8 @@ void delete_prev_char(DrawCommand* self, WINDOW* win)
 {
     // move to prev and delete
     // win->_curx - 1 and check boundaries
+    (void)self;
+    (void)win;
 
 }
 
