@@ -4,6 +4,7 @@
 #include "time.h"
 #include <stdlib.h>
 #include "ui_commands.h"
+#include "typing_test_input.h"
 
 #include "menu.h"
 
@@ -33,24 +34,6 @@ TypingTest new_english_typing_test(char* text)
     };
 }
 
-/* this should be the template */
-typedef struct TypingTestInput {
-    bool is_correct;
-    int  time_since_test_start;
-    // has to be an int since there are other non-alphabetic keycodes.
-    int inputted;
-} TypingTestInput;
-
-DrawCommand draw_command_from_input(TypingTestInput* inp)
-{
-    if (inp->inputted == KEY_BACKSPACE || inp->inputted == KEY_DC) {
-        return new_delete_char_command();
-    } else if (!inp->is_correct) {
-        return new_draw_char_command(inp->inputted);  // draw_incorrect_char_command
-    } else {
-        return new_draw_char_command(inp->inputted);
-    }
-}
 
 /* This function will await until a char is inputted. Halts the rest of the program!!! */
 TypingTestInput get_input(TypingTest* tt)

@@ -30,3 +30,14 @@ DrawCommand new_delete_char_command()
     dc.c = '\0';
     return dc;
 }
+
+DrawCommand draw_command_from_input(TypingTestInput* inp)
+{
+    if (inp->inputted == KEY_BACKSPACE || inp->inputted == KEY_DC) {
+        return new_delete_char_command();
+    } else if (!inp->is_correct) {
+        return new_draw_char_command(inp->inputted);  // draw_incorrect_char_command
+    } else {
+        return new_draw_char_command(inp->inputted);
+    }
+}
