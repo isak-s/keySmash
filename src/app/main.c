@@ -10,11 +10,22 @@
 
 int main(void) {
     initscr();
+
+    if (!has_colors()) {
+        endwin();
+        fprintf(stderr, "Unsupported terminal! Terminal must support colors.");
+        exit(1);
+    }
+    start_color();
+    use_default_colors();
+
+    init_pair(1, COLOR_GREEN, -1); // 1 = pair number, -1 = default background
+    init_pair(2, COLOR_RED, -1); // 1 = pair number, -1 = default background
+
     cbreak();
     noecho();
     keypad(stdscr, TRUE);
     refresh();
-    // logical panel
 
     int max_x, max_y;
     getmaxyx(stdscr, max_y, max_x);
@@ -42,17 +53,17 @@ int main(void) {
     wrefresh(ta.win);
 
     // iterates over all chars in the text, and creates draw commands for all of them.
-    TypingTest tt = typing_test_new_english("this is an example typing test");
+    TypingTest tt = typing_test_new_english("this is an example typing test lorem ipsum dolor sit amet tntntntntntntntntntntntntntntntntntntntntntntntntntntntntntnt");
     // draw all chars
     typing_test_execute_draw_queue(&tt, &ta_ctx);
     // user types over the already written text, but in a different color.
 
     while(true) {
-        TypingTestInput inp = get_input(&tt);
+        TypingTestInput inp = get_input(&tt, &ta_ctx);
         // UICommand from input. can be tab, shift tab or enter to navigate menu.
         DrawCommand dc = draw_command_from_input(&inp);
         dc.execute(&dc, &ta_ctx);
-        render_context_handle_screen_wrapping(&ta_ctx);
+        increment_cursor(&ta_ctx);
         wrefresh(ta.win);
     }
     free(main_menu.panel->elements);

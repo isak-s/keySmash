@@ -18,7 +18,7 @@ typedef struct {
 
 TypingTest typing_test_new_english(char* text);
 
-TypingTestInput get_input(TypingTest* tt);
+TypingTestInput get_input(TypingTest* tt, RenderContext* ctx);
 
 void typing_test_execute_draw_queue(TypingTest* tt, RenderContext* ctx);
 

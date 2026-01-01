@@ -11,12 +11,21 @@ RenderContext render_context_new(WINDOW* win)
     };
 }
 
-void render_context_handle_screen_wrapping(RenderContext* ctx)
+void increment_cursor(RenderContext* ctx)
 {
     ctx->cx++;
-    if (ctx->cx >= ctx->max_x - 1) {
+    if (ctx->cx >= ctx->max_x) {
         ctx->cx = 1;
         ctx->cy++;
+    }
+}
+
+void decrement_cursor(RenderContext* ctx)
+{
+    ctx->cx--;
+    if (ctx->cx <= 0) {
+        ctx->cx = ctx->max_x;
+        ctx->cy--;
     }
 }
 

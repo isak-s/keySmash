@@ -25,7 +25,7 @@ void typing_test_execute_draw_queue(TypingTest* tt, RenderContext* ctx)
     while (cmd) {
         cmd->execute(cmd, ctx);
 
-        render_context_handle_screen_wrapping(ctx);
+        increment_cursor(ctx);
 
         if (render_context_out_of_space(ctx)) break;
 
@@ -54,11 +54,13 @@ TypingTest typing_test_new_english(char* text)
 }
 
 /* This function will await until a char is inputted. Halts the rest of the program!!! */
-TypingTestInput get_input(TypingTest* tt)
+TypingTestInput get_input(TypingTest* tt, RenderContext* ctx)
 {
+    // cx and cy are offset by 1 from the text index since they represent screen position and have to account for the border.
+    int idx = (ctx->cx - 1) + (ctx->cy - 1) * (ctx->max_x - 1);
     TypingTestInput input;
     input.inputted = getch();
     input.time_since_test_start = time(NULL) - tt->start_timestamp;
-    input.is_correct = (tt->text[tt->idx] == input.inputted);
+    input.is_correct = (tt->text[idx] == input.inputted);
     return input;
 }

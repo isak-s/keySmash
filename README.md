@@ -4,6 +4,8 @@ first install curses:
     sudo apt-get install libncurses-dev
 
 TODO:
+- [ ] draw current word in separate box refresh upon hitting space
+
 - [ ] create structs for different elements that can be resized based on terminal size.
 
 - [ ] implement state machine with in test, and in menu
