@@ -10,9 +10,10 @@ BIN_DIR := build/bin
 TEST_BIN_DIR := build/tests
 
 # ---------- App ----------
-SRC := $(wildcard src/*.c)
+# SRC := $(wildcard src/**/.c)
+SRC := $(shell find src/app src/backend src/domain src/storage src/ui -name '*.c')
 APP := $(BIN_DIR)/main
-APP_MAIN := src/main.c
+APP_MAIN := src/app/main.c
 APP_SRC := $(filter-out $(APP_MAIN), $(SRC))
 
 # ---------- Unity ----------

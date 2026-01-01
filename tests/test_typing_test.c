@@ -1,7 +1,9 @@
 #include <unity.h>
-#include "typing_test.h"
 #include <stdlib.h>
 #include <string.h>
+
+#include "domain/typing_test.h"
+#include "ui/ui_commands.h"
 
 void setUp(void) {}    // runs before each test
 void tearDown(void) {} // runs after each test

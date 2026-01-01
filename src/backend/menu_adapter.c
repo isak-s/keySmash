@@ -2,6 +2,7 @@
 #include <ncurses.h>
 #include <string.h>
 #include <stdlib.h>
+#include "ui/ui_panel_curses.h"
 
 void menu_item_draw_adapter(UIElement* el, void* ctx) {
     static int row = 1;  // TEMP: reset per frame later

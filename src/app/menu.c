@@ -1,6 +1,6 @@
 #include "menu.h"
-#include "ui_panel.h"
-#include "menu_adapter.h"
+#include "backend/ui_panel.h"
+#include "backend/menu_adapter.h"
 #include <stdlib.h>
 
 UIPanelCurses menu_main_create(int max_x)

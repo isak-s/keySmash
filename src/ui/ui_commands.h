@@ -4,7 +4,7 @@
 #define UI_COMMANDS_H
 
 #include <ncurses.h>
-#include "typing_test_input.h"
+#include "domain/typing_test_input.h"
 #include "render_context.h"
 
 typedef struct DrawCommand DrawCommand;

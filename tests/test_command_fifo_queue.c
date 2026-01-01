@@ -1,5 +1,7 @@
 #include <unity.h>
-#include "fifo_queue.h"
+
+#include "storage/fifo_queue.h"
+#include "ui/ui_commands.h"
 
 static FifoQueue q;
 

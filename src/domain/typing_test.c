@@ -1,8 +1,10 @@
 #include "typing_test.h"
-#include "typing_test_input.h"
+
 #include "time.h"
 #include <string.h>
 #include <stdlib.h>
+
+#include "ui/ui_commands.h"
 
 void typing_test_init_draw_queue(TypingTest* tt)
 {

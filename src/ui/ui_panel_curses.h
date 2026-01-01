@@ -1,7 +1,7 @@
 #ifndef UI_PANEL_CURSES_H
 #define UI_PANEL_CURSES_H
 
-#include "ui_panel.h"
+#include "backend/ui_panel.h"
 #include <ncurses.h>
 
 typedef struct {

@@ -1,10 +1,10 @@
 #ifndef MENU_H
 #define MENU_H
 
-#include "ui_element.h"
+#include "backend/ui_element.h"
 #include <stddef.h>
 #include <stdbool.h>
-#include "ui_panel_curses.h"
+#include "ui/ui_panel_curses.h"
 
 typedef struct {
     const char* text;

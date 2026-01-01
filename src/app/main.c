@@ -1,12 +1,11 @@
 #include <ncurses.h>
-#include "ui_panel_curses.h"
-#include "menu_adapter.h"
+#include "ui/ui_panel_curses.h"
 #include <stdlib.h>
-#include "ui_commands.h"
-#include "typing_test_input.h"
-#include "typing_test.h"
+#include "ui/ui_commands.h"
+#include "domain/typing_test_input.h"
+#include "domain/typing_test.h"
 #include "menu.h"
-#include "render_context.h"
+#include "ui/render_context.h"
 
 
 int main(void) {

@@ -1,7 +1,7 @@
 #ifndef FIFO_QUEUE_H
 #define FIFO_QUEUE_H
 
-#include "ui_commands.h"
+#include <stddef.h>
 
 typedef struct Node {
     void* cmd;

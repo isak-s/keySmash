@@ -1,7 +1,9 @@
 #ifndef TYPING_TEST_H
 #define TYPING_TEST_H
 
-#include "fifo_queue.h"
+#include "storage/fifo_queue.h"
+#include "ui/render_context.h"
+#include "typing_test_input.h"
 
 typedef struct {
     long  start_timestamp;
