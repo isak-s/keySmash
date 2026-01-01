@@ -1,49 +1,12 @@
 #include <ncurses.h>
 #include "ui_panel_curses.h"
 #include "menu_adapter.h"
-#include "time.h"
 #include <stdlib.h>
 #include "ui_commands.h"
 #include "typing_test_input.h"
-
+#include "typing_test.h"
 #include "menu.h"
 
-
-// make this a contract and then have subtypes such as englishtest and such maybe
-
-#include "fifo_queue.h"
-typedef struct {
-    long  start_timestamp;
-    char* text;
-    char* language;
-    int idx;
-
-    FifoQueue draw_queue;
-    FifoQueue input_history;
-} TypingTest;
-
-TypingTest new_english_typing_test(char* text)
-{
-    return (TypingTest){
-        .idx = 0,
-        .language = "english",
-        .text = text,
-        .start_timestamp = time(NULL),
-        .draw_queue = fifo_q_new(),
-        .input_history = fifo_q_new()
-    };
-}
-
-
-/* This function will await until a char is inputted. Halts the rest of the program!!! */
-TypingTestInput get_input(TypingTest* tt)
-{
-    TypingTestInput input;
-    input.inputted = getch();
-    input.time_since_test_start = time(NULL) - tt->start_timestamp;
-    input.is_correct = (tt->text[tt->idx] == input.inputted);
-    return input;
-}
 
 int main(void) {
     initscr();
@@ -83,9 +46,11 @@ int main(void) {
     dc.execute(&dc, ta.win);
     wrefresh(ta.win);
 
-    TypingTest tt = new_english_typing_test("this is an example typing test");
-    // iterate over all chars in the text, and create draw commands for all of them.
-    // Then reset index, and the user types over the already written text, but in a different color.
+    // iterates over all chars in the text, and creates draw commands for all of them.
+    TypingTest tt = typing_test_new_english("this is an example typing test");
+    // draw all chars
+
+    // user types over the already written text, but in a different color.
 
     int cx = 1;
     int cy = 2;

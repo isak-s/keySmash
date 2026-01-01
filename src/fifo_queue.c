@@ -1,5 +1,6 @@
 #include "fifo_queue.h"
 #include <stdlib.h>
+#include <memory.h>
 
 #include <assert.h>
 
@@ -11,10 +12,13 @@ FifoQueue fifo_q_new()
     };
 }
 
-void fifo_q_push(FifoQueue* q, void* cmd)
+void fifo_q_push(FifoQueue* q, void* cmd, size_t size)
 {
-    Node* new_n = (Node*)malloc(sizeof(Node));
-    new_n->cmd = cmd;
+    // copy and store by value
+    Node* new_n = malloc(sizeof(Node));
+    new_n->cmd = malloc(size);
+    memcpy(new_n->cmd, cmd, size);
+
     new_n->next = NULL;
 
     if (q->first == NULL) {
@@ -27,19 +31,14 @@ void fifo_q_push(FifoQueue* q, void* cmd)
 
 void* fifo_q_pop(FifoQueue* q)
 {
-    if (q->first == NULL) {
-        return NULL;
-    }
+    if (!q->first) return NULL;
 
     Node* n = q->first;
     void* cmd = n->cmd;
-
     q->first = n->next;
-    if (q->first == NULL) {
-        q->last = NULL;
-    }
+
+    if (!q->first) q->last = NULL;
 
     free(n);
-
     return cmd;
 }
