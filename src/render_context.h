@@ -13,4 +13,8 @@ typedef struct {
 
 RenderContext render_context_new(WINDOW* win);
 
+void render_context_handle_screen_wrapping(RenderContext* ctx);
+
+bool render_context_out_of_space(RenderContext* ctx);
+
 #endif

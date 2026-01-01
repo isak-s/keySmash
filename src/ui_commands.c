@@ -1,9 +1,10 @@
 #include "ui_commands.h"
 
+// Cursor movement lives in executor by mutating ctx
 
 void draw_default_formatted_char(DrawCommand* self, RenderContext* ctx)
 {
-    waddch(ctx->win, self->c);
+    mvwaddch(ctx->win, ctx->cy, ctx->cx, self->c);
 }
 
 void delete_prev_char(DrawCommand* self, RenderContext* ctx)

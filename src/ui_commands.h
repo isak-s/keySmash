@@ -1,3 +1,5 @@
+// Cursor movement lives in executor by mutating ctx
+
 #ifndef UI_COMMANDS_H
 #define UI_COMMANDS_H
 

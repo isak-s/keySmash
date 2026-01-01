@@ -15,14 +15,26 @@ void typing_test_init_draw_queue(TypingTest* tt)
 // when user is typing, we should shift everything once a line is completed so that we can print the rest. TODO for future
 void typing_test_execute_draw_queue(TypingTest* tt, RenderContext* ctx)
 {
-    // if there is no open space in the window, pass.
+    int prev_x = ctx->cx;
+    int prev_y = ctx->cy;
+    if (render_context_out_of_space(ctx)) return;
+
     DrawCommand* cmd = fifo_q_pop(&tt->draw_queue);
     while (cmd) {
         cmd->execute(cmd, ctx);
+
+        render_context_handle_screen_wrapping(ctx);
+
+        if (render_context_out_of_space(ctx)) break;
+
         free(cmd);
         cmd = fifo_q_pop(&tt->draw_queue);
-        // if there is no space left in the window, break.
     }
+    // set cursor to prev pos before drawing so that the user types over the text.
+    ctx->cx = prev_x;
+    ctx->cy = prev_y;
+    wmove(ctx->win, ctx->cy, ctx->cx);
+
     wrefresh(ctx->win);
 }
 

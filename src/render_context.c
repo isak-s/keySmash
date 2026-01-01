@@ -10,3 +10,17 @@ RenderContext render_context_new(WINDOW* win)
         .max_y = getmaxy(win) - 1  // because of the border
     };
 }
+
+void render_context_handle_screen_wrapping(RenderContext* ctx)
+{
+    ctx->cx++;
+    if (ctx->cx >= ctx->max_x - 1) {
+        ctx->cx = 1;
+        ctx->cy++;
+    }
+}
+
+bool render_context_out_of_space(RenderContext* ctx)
+{
+    return (ctx->cy >= ctx->max_y - 1);
+}
