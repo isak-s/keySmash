@@ -2,6 +2,7 @@
 #include "typing_test_input.h"
 #include "time.h"
 #include <string.h>
+#include <stdlib.h>
 
 void typing_test_init_draw_queue(TypingTest* tt)
 {
@@ -9,6 +10,20 @@ void typing_test_init_draw_queue(TypingTest* tt)
         DrawCommand dc = new_draw_char_command(*c);
         fifo_q_push(&tt->draw_queue, &dc, sizeof(DrawCommand));
     }
+}
+
+// when user is typing, we should shift everything once a line is completed so that we can print the rest. TODO for future
+void typing_test_execute_draw_queue(TypingTest* tt, RenderContext* ctx)
+{
+    // if there is no open space in the window, pass.
+    DrawCommand* cmd = fifo_q_pop(&tt->draw_queue);
+    while (cmd) {
+        cmd->execute(cmd, ctx);
+        free(cmd);
+        cmd = fifo_q_pop(&tt->draw_queue);
+        // if there is no space left in the window, break.
+    }
+    wrefresh(ctx->win);
 }
 
 TypingTest typing_test_new_english(char* text)

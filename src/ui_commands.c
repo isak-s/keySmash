@@ -1,16 +1,17 @@
 #include "ui_commands.h"
 
-void draw_default_formatted_char(DrawCommand* self, WINDOW* win)
+
+void draw_default_formatted_char(DrawCommand* self, RenderContext* ctx)
 {
-    waddch(win, self->c);
+    waddch(ctx->win, self->c);
 }
 
-void delete_prev_char(DrawCommand* self, WINDOW* win)
+void delete_prev_char(DrawCommand* self, RenderContext* ctx)
 {
     // move to prev and delete
     // win->_curx - 1 and check boundaries
     (void)self;
-    (void)win;
+    (void)ctx;
 
 }
 

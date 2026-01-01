@@ -3,10 +3,11 @@
 
 #include <ncurses.h>
 #include "typing_test_input.h"
+#include "render_context.h"
 
 typedef struct DrawCommand DrawCommand;
 
-typedef void (*DrawCharacterFn)(DrawCommand* self, WINDOW* win);
+typedef void (*DrawCharacterFn)(DrawCommand* self, RenderContext* win);
 
 struct DrawCommand {
     DrawCharacterFn execute;
