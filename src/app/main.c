@@ -61,7 +61,6 @@ int main(void) {
         // UICommand from input. can be tab, shift tab or enter to navigate menu.
         DrawCommand dc = draw_command_from_input(&inp);
         dc.execute(&dc, &ta_ctx);
-        increment_cursor(&ta_ctx);
         wmove(ta.win, ta_ctx.cy, ta_ctx.cx);
         wrefresh(ta.win);
     }

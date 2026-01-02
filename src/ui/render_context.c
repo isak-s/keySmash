@@ -15,6 +15,8 @@ RenderContext render_context_new(WINDOW* win)
 
 void increment_cursor(RenderContext* ctx)
 {
+    // the cursor can never overflow.
+    // The text will be shifted upward together with the cursor somewhere else
     ctx->cx++;
     if (ctx->cx > ctx->max_x) {
         ctx->cx = 1;
@@ -25,7 +27,11 @@ void increment_cursor(RenderContext* ctx)
 void decrement_cursor(RenderContext* ctx)
 {
     ctx->cx--;
-    if (ctx->cx <= 1) {
+    if (ctx->cx < 1) {
+        if (ctx->cy == 1) {
+            ctx->cx++;
+            return;
+        }
         ctx->cx = ctx->max_x;
         ctx->cy--;
     }

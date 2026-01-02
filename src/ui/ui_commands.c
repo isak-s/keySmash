@@ -5,6 +5,7 @@
 void draw_default_formatted_char(DrawCommand* self, RenderContext* ctx)
 {
     mvwaddch(ctx->win, ctx->cy, ctx->cx, self->c);
+    increment_cursor(ctx);
 }
 
 void draw_correct_input_formatted_char(DrawCommand* self, RenderContext* ctx) {
@@ -14,6 +15,8 @@ void draw_correct_input_formatted_char(DrawCommand* self, RenderContext* ctx) {
     ch &= A_CHARTEXT;
     ch |= COLOR_PAIR(1);
     mvwaddch(ctx->win, ctx->cy, ctx->cx, ch);
+
+    increment_cursor(ctx);
 }
 
 void draw_incorrect_input_formatted_char(DrawCommand* self, RenderContext* ctx) {
@@ -23,20 +26,20 @@ void draw_incorrect_input_formatted_char(DrawCommand* self, RenderContext* ctx) 
     ch &= A_CHARTEXT;
     ch |= COLOR_PAIR(2);
     mvwaddch(ctx->win, ctx->cy, ctx->cx, ch);
+
+    increment_cursor(ctx);
 }
 
 void delete_prev_char(DrawCommand* self, RenderContext* ctx)
 {
-    // move to prev and delete
-    // win->_curx - 1 and check boundaries
     (void)self;
+
     decrement_cursor(ctx);
-    // restore default color
+
+    wmove(ctx->win, ctx->cy, ctx->cx);
+    waddch(ctx->win, ' ');  // erase char
     wmove(ctx->win, ctx->cy, ctx->cx);
 
-    // as of right now, the pos is incremented regardless of what command
-    //      so this is a quick and ugly fix for that.
-    decrement_cursor(ctx);
 }
 
 DrawCommand new_draw_char_command(char c)
