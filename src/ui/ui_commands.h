@@ -9,7 +9,7 @@
 
 typedef struct DrawCommand DrawCommand;
 
-typedef void (*DrawCharacterFn)(DrawCommand* self, RenderContext* win);
+typedef void (*DrawCharacterFn)(DrawCommand* self, RenderContext* ctx);
 
 struct DrawCommand {
     DrawCharacterFn execute;

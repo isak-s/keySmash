@@ -32,6 +32,7 @@ void delete_prev_char(DrawCommand* self, RenderContext* ctx)
     (void)self;
     decrement_cursor(ctx);
     // restore default color
+    wmove(ctx->win, ctx->cy, ctx->cx);
 
     // as of right now, the pos is incremented regardless of what command
     //      so this is a quick and ugly fix for that.
@@ -68,9 +69,14 @@ DrawCommand  new_delete_char_command()
     };
 }
 
+static inline bool is_backspace(int ch)
+{
+    return ch == KEY_BACKSPACE || ch == KEY_DC || ch == 127 || ch == '\b';
+}
+
 DrawCommand draw_command_from_input(TypingTestInput* inp)
 {
-    if (inp->inputted == KEY_BACKSPACE || inp->inputted == KEY_DC) {
+    if (is_backspace(inp->inputted)) {
         return new_delete_char_command();
     } else if (!inp->is_correct) {
         return draw_incorrectly_inputted_command_new(inp->inputted);

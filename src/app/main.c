@@ -6,7 +6,7 @@
 #include "domain/typing_test.h"
 #include "menu.h"
 #include "ui/render_context.h"
-
+#include "ui/ui_constants.h"
 
 int main(void) {
     initscr();
@@ -30,8 +30,6 @@ int main(void) {
     int max_x, max_y;
     getmaxyx(stdscr, max_y, max_x);
 
-    static int border_padding = 2;
-
     UIPanelCurses main_menu = menu_main_create(max_x);
 
     ui_panel_curses_draw(&main_menu);
@@ -42,7 +40,7 @@ int main(void) {
         .width = max_x - 10,
         .height = max_y / 3,
         .x = 5,
-        .y = main_menu.panel->element_count + border_padding * 2,
+        .y = main_menu.panel->element_count + UI_BORDER_PADDING * 2,
         .element_count = 0
     };
 
@@ -64,6 +62,7 @@ int main(void) {
         DrawCommand dc = draw_command_from_input(&inp);
         dc.execute(&dc, &ta_ctx);
         increment_cursor(&ta_ctx);
+        wmove(ta.win, ta_ctx.cy, ta_ctx.cx);
         wrefresh(ta.win);
     }
     free(main_menu.panel->elements);

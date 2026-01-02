@@ -1,4 +1,4 @@
-# A typing test game
+# A typing test game for people terminally in the terminal
 
 first install curses:
     sudo apt-get install libncurses-dev
