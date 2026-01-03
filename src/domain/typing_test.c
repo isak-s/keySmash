@@ -24,12 +24,10 @@ void typing_test_execute_draw_queue(TypingTest* tt, RenderContext* ctx)
     DrawCommand* cmd = fifo_q_pop(&tt->draw_queue);
     while (cmd) {
         cmd->execute(cmd, ctx);
-
-        // increment_cursor(ctx);
+        free(cmd);
 
         if (render_context_out_of_space(ctx)) break;
 
-        free(cmd);
         cmd = fifo_q_pop(&tt->draw_queue);
     }
     // set cursor to prev pos before drawing so that the user types over the text.

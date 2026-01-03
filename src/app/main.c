@@ -7,20 +7,11 @@
 #include "menu.h"
 #include "ui/render_context.h"
 #include "ui/ui_constants.h"
+#include "ui/colors.h"
 
 int main(void) {
     initscr();
-
-    if (!has_colors()) {
-        endwin();
-        fprintf(stderr, "Unsupported terminal! Terminal must support colors.");
-        exit(1);
-    }
-    start_color();
-    use_default_colors();
-
-    init_pair(1, COLOR_GREEN, -1); // 1 = pair number, -1 = default background
-    init_pair(2, COLOR_RED, -1); // 1 = pair number, -1 = default background
+    init_color_scheme(CYBERPUNK_FEVER_DREAM);
 
     cbreak();
     noecho();
