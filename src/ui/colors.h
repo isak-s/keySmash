@@ -8,6 +8,13 @@ enum ColorScheme {
     CYBERPUNK_FEVER_DREAM
 };
 
+enum Color {
+    COLOR_PRIMARY,
+    COLOR_CORRECT,
+    COLOR_INCORRECT
+    // ,DETAIL
+};
+
 void init_color_scheme(int color_sheme);
 
 #endif

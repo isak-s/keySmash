@@ -9,6 +9,8 @@
 #include "ui/ui_constants.h"
 #include "ui/colors.h"
 
+#include "test_area.h"
+
 int main(void) {
     initscr();
     init_color_scheme(CYBERPUNK_FEVER_DREAM);
@@ -24,18 +26,10 @@ int main(void) {
     UIPanelCurses main_menu = menu_main_create(max_x);
 
     ui_panel_curses_draw(&main_menu);
-    wrefresh(main_menu.win);
 
+    int ta_y = main_menu.panel->element_count + UI_BORDER_PADDING * 2;
+    UIPanelCurses ta = test_area_create(max_x, ta_y, max_y);
 
-    UIPanel test_area = {
-        .width = max_x - 10,
-        .height = max_y / 3,
-        .x = 5,
-        .y = main_menu.panel->element_count + UI_BORDER_PADDING * 2,
-        .element_count = 0
-    };
-
-    UIPanelCurses ta = ui_panel_curses_create(&test_area);
     RenderContext ta_ctx = render_context_new(ta.win);
 
     ui_panel_curses_draw(&ta);
