@@ -13,7 +13,7 @@ typedef void (*DrawCharacterFn)(DrawCommand* self, RenderContext* ctx);
 
 struct DrawCommand {
     DrawCharacterFn execute;
-    char c;
+    chtype c;
 };
 
 DrawCommand new_delete_char_command();
