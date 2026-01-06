@@ -3,8 +3,10 @@
 
 void draw_default_formatted_char(DrawCommand* self, RenderContext* ctx)
 {
-    self->c &= A_CHARTEXT;
-    self->c |= COLOR_PAIR(COLOR_PRIMARY);
+    // not needed. Used by default!!
+    // self->c &= A_CHARTEXT;
+    // self->c |= COLOR_PAIR(COLOR_PRIMARY);
+
     mvwaddch(ctx->win, ctx->cy, ctx->cx, self->c);
     increment_cursor(ctx);
 }
