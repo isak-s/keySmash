@@ -9,7 +9,7 @@ typedef struct {
     long  start_timestamp;
     char* text;
     char* language;
-    int idx;
+    size_t idx;
 
     FifoQueue draw_queue;
     FifoQueue input_history;

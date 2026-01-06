@@ -1,15 +1,17 @@
 #include <ncurses.h>
-#include "ui/ui_panel_curses.h"
 #include <stdlib.h>
-#include "ui/ui_commands.h"
+#include <string.h>
+
 #include "domain/typing_test_input.h"
 #include "domain/typing_test.h"
-#include "menu.h"
 #include "ui/render_context.h"
 #include "ui/ui_constants.h"
 #include "ui/colors.h"
+#include "ui/ui_commands.h"
+#include "ui/ui_panel_curses.h"
 
 #include "test_area.h"
+#include "menu.h"
 
 int main(void) {
     initscr();
@@ -36,21 +38,21 @@ int main(void) {
     wrefresh(ta.win);
 
     // iterates over all chars in the text, and creates draw commands for all of them.
-    TypingTest tt = typing_test_new_english("this is an example typing test lorem ipsum dolor sit amet tntntntntntntntntntntntntntntntntntntntntntntntntntntntntntnt");
+    TypingTest tt = typing_test_new_english("hej jag heter ensar"); // "this is an example typing test lorem ipsum dolor sit amet");
     // draw all chars
     typing_test_execute_draw_queue(&tt, &ta_ctx);
     // user types over the already written text, but in a different color.
 
-    while(true) {
+    while(tt.idx < strlen(tt.text) - 1) {
         TypingTestInput inp = get_input(&tt, &ta_ctx);
         // UICommand from input. can be tab, shift tab or enter to navigate menu.
         DrawCommand dc = draw_command_from_input(&inp);
         dc.execute(&dc, &ta_ctx);
-        wmove(ta.win, ta_ctx.cy, ta_ctx.cx);
         wrefresh(ta.win);
     }
-    free(main_menu.panel->elements);
-    // free(main_menu.panel);
+
+    // show statistics:
+
     ui_panel_curses_destroy(&main_menu);
     ui_panel_curses_destroy(&ta);
     endwin();
