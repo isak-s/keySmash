@@ -11,8 +11,7 @@ enum ColorScheme {
 };
 
 enum Color {
-    COLOR_TERM_DEFAULT,
-    COLOR_PRIMARY,
+    COLOR_PRIMARY = 1,
     COLOR_CORRECT,
     COLOR_INCORRECT
     // ,DETAIL

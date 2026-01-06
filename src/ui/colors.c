@@ -18,7 +18,7 @@ void init_gruvbox_color_sceme()
 void init_tron_orange_color_scheme()
 {
     init_pair(COLOR_PRIMARY, 214, 234);
-    init_pair(COLOR_CORRECT, 222, -1);
+    init_pair(COLOR_CORRECT, 222, 237);
     init_pair(COLOR_INCORRECT, COLOR_BLACK, 222);
 }
 
