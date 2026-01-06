@@ -32,16 +32,19 @@ void draw_incorrect_input_formatted_char(DrawCommand* self, RenderContext* ctx) 
 
     increment_cursor(ctx);
 }
-
+/* does not delete the char. Resets the color to default so that it looks like the user's input is reverted. */
 void delete_prev_char(DrawCommand* self, RenderContext* ctx)
 {
     (void)self;
 
     decrement_cursor(ctx);
 
-    wmove(ctx->win, ctx->cy, ctx->cx);
-    waddch(ctx->win, ' ');  // erase char
-    wmove(ctx->win, ctx->cy, ctx->cx);
+    chtype ch = mvwinch(ctx->win, ctx->cy, ctx->cx);
+
+    ch &= A_CHARTEXT;
+    ch |= COLOR_PAIR(COLOR_PRIMARY);
+    mvwaddch(ctx->win, ctx->cy, ctx->cx, ch);
+    wmove(ctx->win, ctx->cy, ctx->cx); // redraws the cursor
 
 }
 
