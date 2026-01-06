@@ -1,26 +1,21 @@
 #include <ncurses.h>
-#include "ui/ui_panel_curses.h"
 #include <stdlib.h>
-#include "ui/ui_commands.h"
+#include <string.h>
+
 #include "domain/typing_test_input.h"
 #include "domain/typing_test.h"
-#include "menu.h"
 #include "ui/render_context.h"
 #include "ui/ui_constants.h"
+#include "ui/colors.h"
+#include "ui/ui_commands.h"
+#include "ui/ui_panel_curses.h"
+
+#include "test_area.h"
+#include "menu.h"
 
 int main(void) {
     initscr();
-
-    if (!has_colors()) {
-        endwin();
-        fprintf(stderr, "Unsupported terminal! Terminal must support colors.");
-        exit(1);
-    }
-    start_color();
-    use_default_colors();
-
-    init_pair(1, COLOR_GREEN, -1); // 1 = pair number, -1 = default background
-    init_pair(2, COLOR_RED, -1); // 1 = pair number, -1 = default background
+    init_color_scheme(stdscr, TRON_ORANGE);
 
     cbreak();
     noecho();
@@ -31,41 +26,35 @@ int main(void) {
     getmaxyx(stdscr, max_y, max_x);
 
     UIPanelCurses main_menu = menu_main_create(max_x);
+    init_color_scheme(main_menu.win, TRON_ORANGE);
 
     ui_panel_curses_draw(&main_menu);
-    wrefresh(main_menu.win);
 
+    int ta_y = main_menu.panel->element_count + UI_BORDER_PADDING * 2;
+    UIPanelCurses ta = test_area_create(max_x, ta_y, max_y);
 
-    UIPanel test_area = {
-        .width = max_x - 10,
-        .height = max_y / 3,
-        .x = 5,
-        .y = main_menu.panel->element_count + UI_BORDER_PADDING * 2,
-        .element_count = 0
-    };
+    init_color_scheme(ta.win, TRON_ORANGE);
 
-    UIPanelCurses ta = ui_panel_curses_create(&test_area);
     RenderContext ta_ctx = render_context_new(ta.win);
 
     ui_panel_curses_draw(&ta);
     wrefresh(ta.win);
 
     // iterates over all chars in the text, and creates draw commands for all of them.
-    TypingTest tt = typing_test_new_english("this is an example typing test lorem ipsum dolor sit amet tntntntntntntntntntntntntntntntntntntntntntntntntntntntntntnt");
-    // draw all chars
+    TypingTest tt = typing_test_new_english("this is an example typing test lorem ipsum dolor sit amet");
     typing_test_execute_draw_queue(&tt, &ta_ctx);
     // user types over the already written text, but in a different color.
 
-    while(true) {
+    while(tt.idx < strlen(tt.text) - 1) {
         TypingTestInput inp = get_input(&tt, &ta_ctx);
         // UICommand from input. can be tab, shift tab or enter to navigate menu.
         DrawCommand dc = draw_command_from_input(&inp);
         dc.execute(&dc, &ta_ctx);
-        wmove(ta.win, ta_ctx.cy, ta_ctx.cx);
         wrefresh(ta.win);
     }
-    free(main_menu.panel->elements);
-    // free(main_menu.panel);
+
+    // show statistics:
+
     ui_panel_curses_destroy(&main_menu);
     ui_panel_curses_destroy(&ta);
     endwin();

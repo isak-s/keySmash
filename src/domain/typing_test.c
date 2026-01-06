@@ -24,12 +24,10 @@ void typing_test_execute_draw_queue(TypingTest* tt, RenderContext* ctx)
     DrawCommand* cmd = fifo_q_pop(&tt->draw_queue);
     while (cmd) {
         cmd->execute(cmd, ctx);
-
-        // increment_cursor(ctx);
+        free(cmd);
 
         if (render_context_out_of_space(ctx)) break;
 
-        free(cmd);
         cmd = fifo_q_pop(&tt->draw_queue);
     }
     // set cursor to prev pos before drawing so that the user types over the text.
@@ -57,10 +55,28 @@ TypingTest typing_test_new_english(char* text)
 TypingTestInput get_input(TypingTest* tt, RenderContext* ctx)
 {
     // cx and cy are offset by 1 from the text index since they represent screen position and have to account for the border.
-    int idx = (ctx->cx - 1) + (ctx->cy - 1) * (ctx->max_x);
+    tt->idx = (ctx->cx - 1) + (ctx->cy - 1) * (ctx->max_x);
     TypingTestInput input;
     input.inputted = getch();
     input.time_since_test_start = time(NULL) - tt->start_timestamp;
-    input.is_correct = (tt->text[idx] == input.inputted);
+    input.is_correct = (tt->text[tt->idx] == input.inputted);
+
+    // add input to input history
+    fifo_q_push(&tt->input_history, &input, sizeof(TypingTestInput));
+
     return input;
 }
+/*
+void typing_test_run(TypingTest* tt, RenderContext* ctx)
+{
+    while(true) {
+        TypingTestInput inp = get_input(&tt, &ctx);
+        // UICommand from input. can be tab, shift tab or enter to navigate menu.
+        DrawCommand dc = draw_command_from_input(&inp);
+        dc.execute(&dc, &ta_ctx);
+        fifo_q_push(&tt->input_history, &inp, sizeof(TypingTestInput));
+        // wmove(ta.win, ta_ctx.cy, ta_ctx.cx);
+        wrefresh(ta.win);
+    }
+}
+*/
