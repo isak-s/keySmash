@@ -55,7 +55,7 @@ TypingTest typing_test_new_english(char* text)
 TypingTestInput get_input(TypingTest* tt, RenderContext* ctx)
 {
     // cx and cy are offset by 1 from the text index since they represent screen position and have to account for the border.
-    tt->idx = (ctx->cx - 1) + (ctx->cy - 1) * (ctx->max_x);
+    tt->idx = (ctx->cx - 1) + (ctx->cy + ctx->nbr_scrolls - 1) * (ctx->max_x);
     TypingTestInput input;
     input.inputted = getch();
     input.time_since_test_start = time(NULL) - tt->start_timestamp;

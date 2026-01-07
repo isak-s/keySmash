@@ -8,6 +8,7 @@ RenderContext render_context_new(WINDOW* win)
         .cx = 1,
         .cy = 1,
         .win = win,
+        .nbr_scrolls = 0,  // this is ugly as shit. Typingtest tracks text idx via the render context and needs to know if we scrolled or not.
         .max_x = getmaxx(win) - UI_BORDER_PADDING,  // because of the border
         .max_y = getmaxy(win) - UI_BORDER_PADDING  // because of the border
     };
@@ -39,5 +40,20 @@ void decrement_cursor(RenderContext* ctx)
 
 bool render_context_out_of_space(RenderContext* ctx)
 {
-    return (ctx->cy >= ctx->max_y);
+    return (ctx->cy > ctx->max_y);  // y starts at 0
+}
+
+void redraw_cursor(RenderContext* ctx)
+{
+    wmove(ctx->win, ctx->cy, ctx->cx);
+}
+
+void scroll_window_upwards(RenderContext* ctx)
+{
+    if (!ctx->cy) return; // if we are already at the top, don't scroll!
+    wscrl(ctx->win, 1);
+    ctx->cy--;
+    ctx->nbr_scrolls++;
+    redraw_cursor(ctx);
+    wrefresh(ctx->win);
 }

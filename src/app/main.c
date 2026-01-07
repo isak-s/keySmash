@@ -26,28 +26,48 @@ int main(void) {
     getmaxyx(stdscr, max_y, max_x);
 
     UIPanelCurses main_menu = menu_main_create(max_x);
-    init_color_scheme(main_menu.win, TRON_ORANGE);
 
     int ta_y = main_menu.panel->element_count + UI_BORDER_PADDING * 2;
-    UIPanelCurses ta = test_area_create(max_x, ta_y, max_y);
-    init_color_scheme(ta.win, TRON_ORANGE);
 
-    RenderContext ta_ctx = render_context_new(ta.win);
+    UIPanelCurses ta = test_area_create(max_x, ta_y, max_y);
+
+    init_color_scheme(ta.border_win, TRON_ORANGE);
+    init_color_scheme(ta.cont_win, TRON_ORANGE);
+    init_color_scheme(main_menu.border_win, TRON_ORANGE);
+    init_color_scheme(main_menu.cont_win, TRON_ORANGE);
+
+    RenderContext ta_ctx = render_context_new(ta.cont_win);
 
     ui_panel_curses_draw(&main_menu);
     ui_panel_curses_draw(&ta);
 
     // iterates over all chars in the text, and creates draw commands for all of them.
-    TypingTest tt = typing_test_new_english("this is an example typing test lorem ipsum dolor sit amet");
+    TypingTest tt = typing_test_new_english(
+        "At the moment we can't afford to go to other planets. We don't have the ships to take us there. There may be other people out there (I don't have any opinions about Life Out There, I just don't know) but it's nice to think that one could, even here and now, be whisked away just by hitchhiking."
+    );
     typing_test_execute_draw_queue(&tt, &ta_ctx);
     // user types over the already written text, but in a different color.
 
     while(tt.idx < strlen(tt.text) - 1) {
         TypingTestInput inp = get_input(&tt, &ta_ctx);
+        if (inp.inputted == 'q') {
+            scroll_window_upwards(&ta_ctx);
+            int x = ta_ctx.cx;
+            int y = ta_ctx.cy;
+            ta_ctx.cx = 1;
+            ta_ctx.cy = ta_ctx.max_y;
+            typing_test_execute_draw_queue(&tt, &ta_ctx);
+            ta_ctx.cx = x;
+            ta_ctx.cy = y;
+            redraw_cursor(&ta_ctx);
+
+        } else {
+            DrawCommand dc = draw_command_from_input(&inp);
+            dc.execute(&dc, &ta_ctx);
+        }
         // UICommand from input. can be tab, shift tab or enter to navigate menu.
-        DrawCommand dc = draw_command_from_input(&inp);
-        dc.execute(&dc, &ta_ctx);
-        wrefresh(ta.win);
+
+        wrefresh(ta.cont_win);
     }
 
     // show statistics:

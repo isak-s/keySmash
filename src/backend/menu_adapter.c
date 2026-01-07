@@ -5,12 +5,12 @@
 #include "ui/ui_panel_curses.h"
 
 void menu_item_draw_adapter(UIElement* el, void* ctx) {
-    static int row = 1;  // TEMP: reset per frame later
+    static int row = 0;  // TEMP: reset per frame later
 
     UIPanelCurses* pc = ctx;
     MenuItem* item = el->impl;
-    int pos = pc->panel->width / 2 - strlen(item->text) / 2;
-    mvwprintw(pc->win, row++, pos, "%s", item->text);
+    int pos = pc->panel->width / 2 - strlen(item->text) / 2 - 1; // 0 indexed!
+    mvwprintw(pc->cont_win, row++, pos, "%s", item->text);
 }
 
 UIElement ui_menu_item_create(MenuItem* item) {

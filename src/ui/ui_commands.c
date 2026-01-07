@@ -17,11 +17,6 @@ void change_chartype_color(chtype* ch, int color_pair)
     *ch |= COLOR_PAIR(color_pair);
 }
 
-void redraw_cursor(RenderContext* ctx)
-{
-    wmove(ctx->win, ctx->cy, ctx->cx);
-}
-
 void draw_correct_input_formatted_char(DrawCommand* self, RenderContext* ctx) {
     (void)self;
 

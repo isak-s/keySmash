@@ -5,8 +5,9 @@
 #include <ncurses.h>
 
 typedef struct {
-    UIPanel* panel;  // pointer to logical panel
-    WINDOW* win;           // curses window
+    UIPanel* panel;        // pointer to logical panel
+    WINDOW* cont_win;     // inner content curses window
+    WINDOW* border_win;  // outer window
 } UIPanelCurses;
 
 // Create curses wrapper for a panel
