@@ -6,7 +6,7 @@
 #include "typing_test_input.h"
 
 typedef struct {
-    long  start_timestamp;
+    int64_t  start_timestamp;
     char* text;
     char* language;
     size_t idx;

@@ -1,10 +1,10 @@
 #include "typing_test.h"
 
-#include "time.h"
 #include <string.h>
 #include <stdlib.h>
 
 #include "ui/ui_commands.h"
+#include "clock_helper.h"
 
 void typing_test_init_draw_queue(TypingTest* tt)
 {
@@ -44,7 +44,7 @@ TypingTest typing_test_new_english(char* text)
         .idx = 0,
         .language = "english",
         .text = text,
-        .start_timestamp = time(NULL),
+        .start_timestamp = now_ms(),
         .draw_queue = fifo_q_new(),
         .input_history = fifo_q_new()};
     typing_test_init_draw_queue(&tt);
@@ -58,7 +58,7 @@ TypingTestInput get_input(TypingTest* tt, RenderContext* ctx)
     tt->idx = (ctx->cx - 1) + (ctx->cy + ctx->nbr_scrolls - 1) * (ctx->max_x);
     TypingTestInput input;
     input.inputted = getch();
-    input.time_since_test_start = time(NULL) - tt->start_timestamp;
+    input.time_since_test_start = now_ms() - tt->start_timestamp;
     input.is_correct = (tt->text[tt->idx] == input.inputted);
 
     // add input to input history
