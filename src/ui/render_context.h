@@ -23,6 +23,6 @@ bool render_context_out_of_space(RenderContext* ctx);
 void redraw_cursor(RenderContext* ctx);
 
 /*Scrolls all text in the window upwards and sets the cursor to the line above */
-void scroll_window_upwards(RenderContext* ctx);
+bool scroll_window_upwards(RenderContext* ctx);
 
 #endif

@@ -48,12 +48,14 @@ void redraw_cursor(RenderContext* ctx)
     wmove(ctx->win, ctx->cy, ctx->cx);
 }
 
-void scroll_window_upwards(RenderContext* ctx)
+bool scroll_window_upwards(RenderContext* ctx)
 {
-    if (!ctx->cy) return; // if we are already at the top, don't scroll!
+    if (!ctx->cy) return false; // if we are already at the top, don't scroll!
     wscrl(ctx->win, 1);
     ctx->cy--;
     ctx->nbr_scrolls++;
     redraw_cursor(ctx);
     wrefresh(ctx->win);
+
+    return true;
 }

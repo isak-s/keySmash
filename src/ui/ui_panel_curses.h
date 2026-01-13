@@ -8,6 +8,7 @@ typedef struct {
     UIPanel* panel;        // pointer to logical panel
     WINDOW* cont_win;     // inner content curses window
     WINDOW* border_win;  // outer window
+    int currRow;  // which row of menu item to draw
 } UIPanelCurses;
 
 // Create curses wrapper for a panel

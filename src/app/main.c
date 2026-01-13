@@ -28,16 +28,23 @@ int main(void) {
     UIPanelCurses main_menu = menu_main_create(max_x);
 
     int ta_y = main_menu.panel->element_count + UI_BORDER_PADDING * 2;
+    int stat_y = max_y / 3 + ta_y;
 
     UIPanelCurses ta = test_area_create(max_x, ta_y, max_y);
+    UIPanelCurses statistics_panel = statistics_panel_create(max_x, stat_y);
 
     init_color_scheme(ta.border_win, TRON_ORANGE);
     init_color_scheme(ta.cont_win, TRON_ORANGE);
+
     init_color_scheme(main_menu.border_win, TRON_ORANGE);
     init_color_scheme(main_menu.cont_win, TRON_ORANGE);
 
+    init_color_scheme(statistics_panel.border_win, TRON_ORANGE);
+    init_color_scheme(statistics_panel.cont_win, TRON_ORANGE);
+
     RenderContext ta_ctx = render_context_new(ta.cont_win);
 
+    ui_panel_curses_draw(&statistics_panel);
     ui_panel_curses_draw(&main_menu);
     ui_panel_curses_draw(&ta);
 
@@ -51,29 +58,27 @@ int main(void) {
     while(tt.idx < strlen(tt.text) - 1) {
         TypingTestInput inp = get_input(&tt, &ta_ctx);
         if (inp.inputted == 'q') {
-            scroll_window_upwards(&ta_ctx);
+            bool scrolled = scroll_window_upwards(&ta_ctx);
             int x = ta_ctx.cx;
             int y = ta_ctx.cy;
             ta_ctx.cx = 1;
             ta_ctx.cy = ta_ctx.max_y;
-            typing_test_execute_draw_queue(&tt, &ta_ctx);
+            if (scrolled) typing_test_execute_draw_queue(&tt, &ta_ctx);
             ta_ctx.cx = x;
             ta_ctx.cy = y;
             redraw_cursor(&ta_ctx);
-
         } else {
             DrawCommand dc = draw_command_from_input(&inp);
             dc.execute(&dc, &ta_ctx);
         }
         // UICommand from input. can be tab, shift tab or enter to navigate menu.
-
         wrefresh(ta.cont_win);
     }
-
     // show statistics:
 
     ui_panel_curses_destroy(&main_menu);
     ui_panel_curses_destroy(&ta);
+    ui_panel_curses_destroy(&statistics_panel);
     endwin();
     return 0;
 }
