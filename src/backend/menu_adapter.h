@@ -10,4 +10,8 @@ void menu_item_draw_adapter(UIElement* el, void* ctx);
 // Create UIElement for a MenuItem
 UIElement ui_menu_item_create(MenuItem* item);
 
+UIElement ui_statistics_wpm_item_create(StatisticsItem* item);
+
+UIElement ui_statistics_incorrect_item_create(StatisticsItem* item);
+
 #endif

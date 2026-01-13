@@ -12,6 +12,7 @@
 
 #include "test_area.h"
 #include "menu.h"
+#include "domain/statistics.h"
 
 int main(void) {
     initscr();
@@ -26,12 +27,14 @@ int main(void) {
     getmaxyx(stdscr, max_y, max_x);
 
     UIPanelCurses main_menu = menu_main_create(max_x);
+    Statistics stat = statistics_create();
 
     int ta_y = main_menu.panel->element_count + UI_BORDER_PADDING * 2;
     int stat_y = max_y / 3 + ta_y;
 
     UIPanelCurses ta = test_area_create(max_x, ta_y, max_y);
-    UIPanelCurses statistics_panel = statistics_panel_create(max_x, stat_y);
+    UIPanelCurses statistics_panel = statistics_panel_create(max_x, stat_y, &stat);
+
 
     init_color_scheme(ta.border_win, TRON_ORANGE);
     init_color_scheme(ta.cont_win, TRON_ORANGE);
@@ -68,10 +71,13 @@ int main(void) {
             ta_ctx.cy = y;
             redraw_cursor(&ta_ctx);
         } else {
+            statistics_update(&stat, &inp);
             DrawCommand dc = draw_command_from_input(&inp);
             dc.execute(&dc, &ta_ctx);
         }
         // UICommand from input. can be tab, shift tab or enter to navigate menu.
+        ui_panel_curses_draw(&statistics_panel);
+        wrefresh(statistics_panel.cont_win);
         wrefresh(ta.cont_win);
     }
     // show statistics:
