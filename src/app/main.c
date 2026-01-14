@@ -57,7 +57,13 @@ int main(void) {
     // user types over the already written text, but in a different color.
 
     while(true) {
-        TypingTestInput inp = get_input(&tt, &ta_ctx);
+        TypingTestInput inp = get_input(&tt);
+
+
+        statistics_update(&stat, &inp);
+        DrawCommand dc = draw_command_from_input(&inp);
+        dc.execute(&dc, &ta_ctx);
+
         if (ta_ctx.cx == 1 && ta_ctx.cy == 2) {
             bool scrolled = scroll_window_upwards(&ta_ctx);
             int x = ta_ctx.cx;
@@ -69,11 +75,6 @@ int main(void) {
             ta_ctx.cy = y;
             redraw_cursor(&ta_ctx);
         }
-
-        statistics_update(&stat, &inp);
-        DrawCommand dc = draw_command_from_input(&inp);
-        dc.execute(&dc, &ta_ctx);
-
         // UICommand from input. can be tab, shift tab or enter to navigate menu.
         ui_panel_curses_draw(&statistics_panel);
         wrefresh(statistics_panel.cont_win);

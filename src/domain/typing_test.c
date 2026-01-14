@@ -1,5 +1,5 @@
 #include "typing_test.h"
-
+#include "storage/file_loader.h"
 #include <string.h>
 #include <stdlib.h>
 
@@ -82,54 +82,48 @@ static inline bool is_backspace(int ch)
 }
 
 /* This function will await until a char is inputted. Halts the rest of the program!!! */
-TypingTestInput get_input(TypingTest* tt, RenderContext* ctx)
+TypingTestInput get_input(TypingTest* tt)
 {
-    // cx and cy are offset by 1 from the text index since they represent screen position and have to account for the border.
-    // tt->cursor = (ctx->cx - 1) + (ctx->cy + ctx->nbr_scrolls - 1) * (ctx->max_x);
+   int ch = getch();
+   return typing_test_process_char(tt, ch);
+}
+
+TypingTestInput typing_test_process_char(TypingTest* tt, int ch)
+{
     TypingTestInput input;
-    input.inputted = getch();
 
-
+    input.inputted = ch;
+    input.is_backspace = is_backspace(ch);
     input.time_since_test_start = now_ms() - tt->start_timestamp;
 
-    int expected = typing_test_get_char(tt, tt->cursor);
-    input.is_correct = (expected == input.inputted);
+    if (input.is_backspace) {
+        if (tt->cursor > 0) {
+            tt->cursor--;
+        }
+        input.is_correct = true;
+    } else {
+        if (tt->cursor > TEXT_BUFFER_CAPACITY / 3) {
+            tt->buf_start = (tt->buf_start + 1) % TEXT_BUFFER_CAPACITY;
+            tt->buf_len--;
+            tt->cursor--;
+        }
 
-    if (tt->cursor > TEXT_BUFFER_CAPACITY / 3) {
-        tt->buf_start = (tt->buf_start + 1) % TEXT_BUFFER_CAPACITY;
-        tt->buf_len--;
-        tt->cursor--;
+        int expected = typing_test_get_char(tt, tt->cursor);
+        input.is_correct = (expected == ch);
+        tt->cursor++;
     }
 
     typing_test_refill_buffer(tt);
-
-    tt->cursor += (is_backspace(input.inputted)) ? -1 : 1;
-    // add input to input history
     fifo_q_push(&tt->input_history, &input, sizeof(TypingTestInput));
 
     return input;
 }
+
 // add parameter words to exclude
 char* get_random_word_english_200(TypingTest* self)
 {
     int i = rand() % 200;
     return self->wordset[i];
-}
-
-int load_words(const char* path, char** words, int max_count, int max_word_len)
-{
-    FILE* f = fopen(path, "r");
-    if (!f) return -1;
-
-    int count = 0;
-
-    while (count < max_count && fgets(words[count], max_word_len, f)) {
-        words[count][strcspn(words[count], "\n")] = '\0';
-        count++;
-    }
-
-    fclose(f);
-    return 0;
 }
 
 char** init_english_200_wordset()
