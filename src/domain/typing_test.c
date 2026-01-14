@@ -6,6 +6,8 @@
 #include "ui/ui_commands.h"
 #include "clock_helper.h"
 
+#include <time.h>
+
 char typing_test_get_char(const TypingTest* tt, size_t idx)
 {
     if (idx >= tt->buf_len) {
@@ -74,14 +76,20 @@ void typing_test_execute_draw_queue(TypingTest* tt, RenderContext* ctx)
     wrefresh(ctx->win);
 }
 
+static inline bool is_backspace(int ch)
+{
+    return ch == KEY_BACKSPACE || ch == KEY_DC || ch == 127 || ch == '\b';
+}
+
 /* This function will await until a char is inputted. Halts the rest of the program!!! */
 TypingTestInput get_input(TypingTest* tt, RenderContext* ctx)
 {
     // cx and cy are offset by 1 from the text index since they represent screen position and have to account for the border.
     // tt->cursor = (ctx->cx - 1) + (ctx->cy + ctx->nbr_scrolls - 1) * (ctx->max_x);
-    tt->cursor++;
     TypingTestInput input;
     input.inputted = getch();
+
+
     input.time_since_test_start = now_ms() - tt->start_timestamp;
 
     int expected = typing_test_get_char(tt, tt->cursor);
@@ -95,6 +103,7 @@ TypingTestInput get_input(TypingTest* tt, RenderContext* ctx)
 
     typing_test_refill_buffer(tt);
 
+    tt->cursor += (is_backspace(input.inputted)) ? -1 : 1;
     // add input to input history
     fifo_q_push(&tt->input_history, &input, sizeof(TypingTestInput));
 
@@ -130,7 +139,7 @@ char** init_english_200_wordset()
     {
         wordset[i] = malloc(20);
     }
-
+    srand(time(NULL));
     load_words("wordsets/english200.txt", wordset, 200, 20);
 
     return wordset;
