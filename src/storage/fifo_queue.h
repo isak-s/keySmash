@@ -19,4 +19,6 @@ void fifo_q_push(FifoQueue* q, void* cmd, size_t size);
 
 void* fifo_q_pop(FifoQueue* q);
 
+void fifo_q_destroy(FifoQueue* q);
+
 #endif

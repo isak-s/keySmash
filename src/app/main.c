@@ -52,13 +52,11 @@ int main(void) {
     ui_panel_curses_draw(&ta);
 
     // iterates over all chars in the text, and creates draw commands for all of them.
-    TypingTest tt = typing_test_new_english(
-        "At the moment we can't afford to go to other planets. We don't have the ships to take us there. There may be other people out there (I don't have any opinions about Life Out There, I just don't know) but it's nice to think that one could, even here and now, be whisked away just by hitchhiking."
-    );
+    TypingTest tt = typing_test_new_english();
     typing_test_execute_draw_queue(&tt, &ta_ctx);
     // user types over the already written text, but in a different color.
 
-    while(tt.idx < strlen(tt.text) - 1) {
+    while(true) {
         TypingTestInput inp = get_input(&tt, &ta_ctx);
         if (inp.inputted == 'q') {
             bool scrolled = scroll_window_upwards(&ta_ctx);
@@ -85,6 +83,7 @@ int main(void) {
     ui_panel_curses_destroy(&main_menu);
     ui_panel_curses_destroy(&ta);
     ui_panel_curses_destroy(&statistics_panel);
+    typing_test_destroy(&tt);
     endwin();
     return 0;
 }

@@ -6,10 +6,46 @@
 #include "ui/ui_commands.h"
 #include "clock_helper.h"
 
+char typing_test_get_char(const TypingTest* tt, size_t idx)
+{
+    if (idx >= tt->buf_len) {
+        return '\0';
+    }
+    return tt->text_buf[(tt->buf_start + idx) % TEXT_BUFFER_CAPACITY];
+}
+
+void typing_test_append_word(TypingTest* tt, const char* word)
+{
+    for (const char* c = word; *c; c++) {
+        tt->text_buf[(tt->buf_start + tt->buf_len) % TEXT_BUFFER_CAPACITY] = *c;
+        tt->buf_len++;
+
+        DrawCommand dc = new_draw_char_command(*c);
+        fifo_q_push(&tt->draw_queue, &dc, sizeof(DrawCommand));
+
+        if (tt->buf_len >= TEXT_BUFFER_CAPACITY) return;
+    }
+    // add space. Might be weird to handle the very last word. Not a problem for now
+    tt->text_buf[(tt->buf_start + tt->buf_len) % TEXT_BUFFER_CAPACITY] = ' ';
+    DrawCommand dc = new_draw_char_command(' ');
+    fifo_q_push(&tt->draw_queue, &dc, sizeof(DrawCommand));
+    tt->buf_len++;
+}
+
+void typing_test_refill_buffer(TypingTest* tt)
+{
+    while (tt->buf_len < TEXT_BUFFER_CAPACITY / 2) {
+        const char* next = tt->get_next_word(tt);
+        typing_test_append_word(tt, next);
+    }
+}
+
 void typing_test_init_draw_queue(TypingTest* tt)
 {
-    for (char* c = tt->text; *c != '\0'; c++) {
-        DrawCommand dc = new_draw_char_command(*c);
+    for (size_t i = 0; i < tt->buf_len; i++) {
+        char c = typing_test_get_char(tt, i);
+        if (c == '\0') return;
+        DrawCommand dc = new_draw_char_command(c);
         fifo_q_push(&tt->draw_queue, &dc, sizeof(DrawCommand));
     }
 }
@@ -42,27 +78,83 @@ void typing_test_execute_draw_queue(TypingTest* tt, RenderContext* ctx)
 TypingTestInput get_input(TypingTest* tt, RenderContext* ctx)
 {
     // cx and cy are offset by 1 from the text index since they represent screen position and have to account for the border.
-    tt->idx = (ctx->cx - 1) + (ctx->cy + ctx->nbr_scrolls - 1) * (ctx->max_x);
+    // tt->cursor = (ctx->cx - 1) + (ctx->cy + ctx->nbr_scrolls - 1) * (ctx->max_x);
+    tt->cursor++;
     TypingTestInput input;
     input.inputted = getch();
     input.time_since_test_start = now_ms() - tt->start_timestamp;
-    input.is_correct = (tt->text[tt->idx] == input.inputted);
+
+    int expected = typing_test_get_char(tt, tt->cursor);
+    input.is_correct = (expected == input.inputted);
+
+    if (tt->cursor > TEXT_BUFFER_CAPACITY / 3) {
+        tt->buf_start = (tt->buf_start + 1) % TEXT_BUFFER_CAPACITY;
+        tt->buf_len--;
+        tt->cursor--;
+    }
+
+    typing_test_refill_buffer(tt);
 
     // add input to input history
     fifo_q_push(&tt->input_history, &input, sizeof(TypingTestInput));
 
     return input;
 }
+// add parameter words to exclude
+char* get_random_word_english_200(TypingTest* self)
+{
+    int i = rand() % 200;
+    return self->wordset[i];
+}
 
-TypingTest typing_test_new_english(char* text)
+int load_words(const char* path, char** words, int max_count, int max_word_len)
+{
+    FILE* f = fopen(path, "r");
+    if (!f) return -1;
+
+    int count = 0;
+
+    while (count < max_count && fgets(words[count], max_word_len, f)) {
+        words[count][strcspn(words[count], "\n")] = '\0';
+        count++;
+    }
+
+    fclose(f);
+    return 0;
+}
+
+char** init_english_200_wordset()
+{
+    char** wordset = malloc(sizeof(char*) * 200);
+    for (int i = 0; i < 200; i++)
+    {
+        wordset[i] = malloc(20);
+    }
+
+    load_words("wordsets/english200.txt", wordset, 200, 20);
+
+    return wordset;
+}
+
+TypingTest typing_test_new_english()
 {
     TypingTest tt = (TypingTest){
-        .idx = 0,
+        .cursor = 0,
         .language = "english",
-        .text = text,
+        .wordset = init_english_200_wordset(),
+        .get_next_word = get_random_word_english_200,
         .start_timestamp = now_ms(),
         .draw_queue = fifo_q_new(),
         .input_history = fifo_q_new()};
+    typing_test_refill_buffer(&tt);
     typing_test_init_draw_queue(&tt);
     return tt;
+}
+
+void typing_test_destroy(TypingTest* tt)
+{
+    for (int i = 0; i < 200; i++) free(tt->wordset[i]);
+    free(tt->wordset);
+    fifo_q_destroy(&tt->draw_queue);
+    fifo_q_destroy(&tt->input_history);
 }
