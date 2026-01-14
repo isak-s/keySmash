@@ -38,19 +38,6 @@ void typing_test_execute_draw_queue(TypingTest* tt, RenderContext* ctx)
     wrefresh(ctx->win);
 }
 
-TypingTest typing_test_new_english(char* text)
-{
-    TypingTest tt = (TypingTest){
-        .idx = 0,
-        .language = "english",
-        .text = text,
-        .start_timestamp = now_ms(),
-        .draw_queue = fifo_q_new(),
-        .input_history = fifo_q_new()};
-    typing_test_init_draw_queue(&tt);
-    return tt;
-}
-
 /* This function will await until a char is inputted. Halts the rest of the program!!! */
 TypingTestInput get_input(TypingTest* tt, RenderContext* ctx)
 {
@@ -66,17 +53,16 @@ TypingTestInput get_input(TypingTest* tt, RenderContext* ctx)
 
     return input;
 }
-/*
-void typing_test_run(TypingTest* tt, RenderContext* ctx)
+
+TypingTest typing_test_new_english(char* text)
 {
-    while(true) {
-        TypingTestInput inp = get_input(&tt, &ctx);
-        // UICommand from input. can be tab, shift tab or enter to navigate menu.
-        DrawCommand dc = draw_command_from_input(&inp);
-        dc.execute(&dc, &ta_ctx);
-        fifo_q_push(&tt->input_history, &inp, sizeof(TypingTestInput));
-        // wmove(ta.win, ta_ctx.cy, ta_ctx.cx);
-        wrefresh(ta.win);
-    }
+    TypingTest tt = (TypingTest){
+        .idx = 0,
+        .language = "english",
+        .text = text,
+        .start_timestamp = now_ms(),
+        .draw_queue = fifo_q_new(),
+        .input_history = fifo_q_new()};
+    typing_test_init_draw_queue(&tt);
+    return tt;
 }
-*/

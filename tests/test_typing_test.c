@@ -70,6 +70,8 @@ void test_reconstruct_draw_queue_from_input_history() {
     // TEST_ASSERT_EQUAL_PTR_MESSAGE(draw_correct_input_formatted_char, dc2->execute, "wrong UIDrawfn");
 }
 
+
+
 int main() {
     RUN_TEST(test_new_english_typing_test_stores_text);
     RUN_TEST(test_new_english_typing_test_generates_draw_queue);
