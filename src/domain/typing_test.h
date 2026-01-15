@@ -4,7 +4,7 @@
 #include "storage/fifo_queue.h"
 #include "ui/render_context.h"
 #include "typing_test_input.h"
-#define TEXT_BUFFER_CAPACITY 512 //10 //512
+#define TEXT_BUFFER_CAPACITY 1028//512 //10 //512
 
 struct TypingTest;
 typedef char* (*RandomWordFn)(struct TypingTest*);
