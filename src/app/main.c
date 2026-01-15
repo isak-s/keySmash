@@ -78,13 +78,18 @@ int main(void) {
 
     while(true) {
         InputEvent ev = get_input();
-
         switch (ev.type) {
         case INPUT_MENU:
             /* code */
             break;
         case INPUT_TYPING:
             TypingTestInput inp = ev.typing;
+
+            if (inp.is_backspace && !backspace_allowed(&ta_ctx)) {
+                ev.type = INPUT_ILLEGAL;
+                break;
+            }
+
             typing_test_handle_input(&tt, &inp);
 
             statistics_set_curr_word(&tt, &stat);

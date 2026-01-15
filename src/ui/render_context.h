@@ -22,6 +22,8 @@ bool render_context_out_of_space(RenderContext* ctx);
 
 void redraw_cursor(RenderContext* ctx);
 
+bool backspace_allowed(RenderContext* ctx);
+
 /*Scrolls all text in the window upwards and sets the cursor to the line above */
 bool scroll_window_upwards(RenderContext* ctx);
 

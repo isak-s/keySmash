@@ -16,8 +16,7 @@ InputEvent decode_input(int ch)
 {
     InputEvent ev;
     bool bksp = is_backspace(ch);
-    if (is_typing_char(ch) || bksp)
-    {
+    if (is_typing_char(ch) || bksp) {
         ev.type = INPUT_TYPING;
         ev.typing.inputted = ch;
         ev.typing.is_backspace = bksp;
