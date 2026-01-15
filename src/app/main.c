@@ -59,6 +59,16 @@ int main(void) {
     while(true) {
         TypingTestInput inp = get_input(&tt);
 
+        int i = 0;
+        char c;
+        while ((c = typing_test_get_char(&tt, tt.cursor + i)) != ' ' &&
+               c != '\0' &&
+               i < 32 - 1)
+        {
+            stat.currword[i++] = c;
+        }
+
+        stat.currword[i] = '\0';
 
         statistics_update(&stat, &inp);
         DrawCommand dc = draw_command_from_input(&inp);

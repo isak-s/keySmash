@@ -33,14 +33,16 @@ UIPanelCurses menu_main_create(int max_x)
 
 UIPanelCurses statistics_panel_create(int max_x, int y, Statistics* stat)
 {
-    int element_count = 2;
+    int element_count = 3;
 
     StatisticsItem word_count = { .row = 0, .text = "WPM: %d", .enabled = false, .stat = stat};
     StatisticsItem incorrect_count = { .row = 1, .text = "INCORRECT: %d", .enabled = false, .stat = stat};
+    StatisticsItem curr_word = { .row = 2, .text = "current word: %s", .enabled = false, .stat = stat};
 
     UIElement* elements = malloc(sizeof(UIElement) * element_count);
     elements[0] = ui_statistics_wpm_item_create(&word_count);
     elements[1] = ui_statistics_incorrect_item_create(&incorrect_count);
+    elements[2] = ui_statistics_currword_item_create(&curr_word);
     UIPanel * stat_panel = malloc(sizeof(UIPanel));
     stat_panel->element_count = element_count;
     stat_panel->elements = elements;

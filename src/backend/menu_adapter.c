@@ -61,3 +61,25 @@ UIElement ui_statistics_incorrect_item_create(StatisticsItem* item)
     el.draw = statistics_menu_incorrect_draw_adapter;
     return el;
 }
+
+void statistics_menu_curr_word_draw_adapter(UIElement* el, void* ctx)
+{
+    UIPanelCurses* pc = ctx;
+    StatisticsItem* item = el->impl;
+    char str[32];
+    snprintf(str, sizeof(str), item->text, item->stat->currword);
+    int pos = pc->panel->width / 2 - strlen(str);
+
+    mvwprintw(pc->cont_win, item->row, pos, "%s", str);
+}
+
+
+UIElement ui_statistics_currword_item_create(StatisticsItem* item)
+{
+    StatisticsItem* copy = malloc(sizeof(StatisticsItem));
+    *copy = *item;
+    UIElement el;
+    el.impl = copy;
+    el.draw = statistics_menu_curr_word_draw_adapter;
+    return el;
+}

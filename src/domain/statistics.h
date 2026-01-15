@@ -8,6 +8,7 @@ typedef struct
     int nbr_correct;
     int nbr_incorrect;
     int wpm;
+    char currword[32];
 } Statistics;
 
 Statistics statistics_create();
