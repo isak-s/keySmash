@@ -37,7 +37,7 @@ UIPanelCurses statistics_panel_create(int max_x, int y, Statistics* stat)
 
     StatisticsItem word_count = { .row = 0, .text = "WPM: %d", .enabled = false, .stat = stat};
     StatisticsItem incorrect_count = { .row = 1, .text = "INCORRECT: %d", .enabled = false, .stat = stat};
-    StatisticsItem curr_word = { .row = 2, .text = "current word: %s", .enabled = false, .stat = stat};
+    StatisticsItem curr_word = { .row = 2, .text = "-| %s |-", .enabled = false, .stat = stat};
 
     UIElement* elements = malloc(sizeof(UIElement) * element_count);
     elements[0] = ui_statistics_wpm_item_create(&word_count);

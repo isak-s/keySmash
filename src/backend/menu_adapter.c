@@ -7,7 +7,7 @@
 void menu_item_draw_adapter(UIElement* el, void* ctx) {
     UIPanelCurses* pc = ctx;
     MenuItem* item = el->impl;
-    int pos = pc->panel->width / 2 - strlen(item->text) / 2 - 1; // 0 indexed!
+    int pos = (pc->panel->width - strlen(item->text)) / 2 - 1; // 0 indexed!
     mvwprintw(pc->cont_win, item->row, pos, "%s", item->text);
 }
 
@@ -25,9 +25,8 @@ void statistics_menu_wpm_draw_adapter(UIElement* el, void* ctx)
     UIPanelCurses* pc = ctx;
     StatisticsItem* item = el->impl;
     char str[32];
-    snprintf(str, sizeof(str), item->text, item->stat->wpm);
-    int pos = pc->panel->width / 2 - strlen(str);
-
+    int len = snprintf(str, sizeof(str), item->text, item->stat->wpm);
+    int pos = (pc->panel->width - len) / 2 - 1;
     mvwprintw(pc->cont_win, item->row, pos, "%s", str);
 }
 
@@ -36,9 +35,8 @@ void statistics_menu_incorrect_draw_adapter(UIElement* el, void* ctx)
     UIPanelCurses* pc = ctx;
     StatisticsItem* item = el->impl;
     char str[32];
-    snprintf(str, sizeof(str), item->text, item->stat->nbr_incorrect);
-    int pos = pc->panel->width / 2 - strlen(str);
-
+    int len = snprintf(str, sizeof(str), item->text, item->stat->nbr_incorrect);
+    int pos = (pc->panel->width - len) / 2 - 1;
     mvwprintw(pc->cont_win, item->row, pos, "%s", str);
 }
 
@@ -67,12 +65,10 @@ void statistics_menu_curr_word_draw_adapter(UIElement* el, void* ctx)
     UIPanelCurses* pc = ctx;
     StatisticsItem* item = el->impl;
     char str[32];
-    snprintf(str, sizeof(str), item->text, item->stat->currword);
-    int pos = pc->panel->width / 2 - strlen(str);
-
+    int len = snprintf(str, sizeof(str), item->text, item->stat->currword);
+    int pos = (pc->panel->width - len) / 2 - 1;
     mvwprintw(pc->cont_win, item->row, pos, "%s", str);
 }
-
 
 UIElement ui_statistics_currword_item_create(StatisticsItem* item)
 {

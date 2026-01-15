@@ -14,6 +14,19 @@
 #include "menu.h"
 #include "domain/statistics.h"
 
+void statistics_set_curr_word(TypingTest* tt, Statistics* stat)
+{
+    int i = 0;
+    char c;
+    while ((c = typing_test_get_char(tt, tt->cursor + i)) != ' ' &&
+           c != '\0' &&
+           i < 32 - 1)
+    {
+        stat->currword[i++] = c;
+    }
+    stat->currword[i] = '\0';
+}
+
 int main(void) {
     initscr();
     init_color_scheme(stdscr, TRON_ORANGE);
@@ -56,21 +69,18 @@ int main(void) {
     typing_test_execute_draw_queue(&tt, &ta_ctx);
     // user types over the already written text, but in a different color.
 
+    statistics_set_curr_word(&tt, &stat);
+    ui_panel_curses_draw(&statistics_panel);
+    wrefresh(statistics_panel.cont_win);
+    redraw_cursor(&ta_ctx);
+    wrefresh(ta.cont_win);
+
     while(true) {
         TypingTestInput inp = get_input(&tt);
 
-        int i = 0;
-        char c;
-        while ((c = typing_test_get_char(&tt, tt.cursor + i)) != ' ' &&
-               c != '\0' &&
-               i < 32 - 1)
-        {
-            stat.currword[i++] = c;
-        }
-
-        stat.currword[i] = '\0';
-
+        statistics_set_curr_word(&tt, &stat);
         statistics_update(&stat, &inp);
+
         DrawCommand dc = draw_command_from_input(&inp);
         dc.execute(&dc, &ta_ctx);
 
