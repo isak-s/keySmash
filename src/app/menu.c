@@ -9,7 +9,7 @@ UIPanelCurses menu_main_create(int max_x)
     int element_count = 4;
 
 
-    MenuItem item1 = { .row = 0, .text = "K_E_Y_S_M_A_S_H", .enabled = true };
+    MenuItem item1 = { .row = 0, .text = "K_E_Y_S_M_A_S_H", .enabled = false };
     MenuItem item2 = { .row = 1, .text = "Statistics", .enabled = true };
     MenuItem item4 = { .row = 2, .text = "Mode: Quote english", .enabled = true };
     MenuItem item3 = { .row = 3, .text = "QUIT(esc)", .enabled = true };
@@ -29,6 +29,29 @@ UIPanelCurses menu_main_create(int max_x)
     menu->elements = elements;
 
     return ui_panel_curses_create(menu);
+}
+
+void handle_menu_input(UIPanelCurses* menu, MenuInput* inp)
+{
+    switch (inp->type)
+    {
+    case M_ARROW_DOWN:
+        /* code */
+        menu->panel->selected++;
+        menu->panel->selected %= menu->panel->element_count;
+        break;
+    case M_ARROW_UP:
+        /* code */
+        menu->panel->selected--;
+        menu->panel->selected %= menu->panel->element_count;
+        break;
+    case M_ENTER:
+        // execute the function at the selected index.
+        endwin();
+        exit(0);
+    default:
+        break;
+    }
 }
 
 UIPanelCurses statistics_panel_create(int max_x, int y, Statistics* stat)

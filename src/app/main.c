@@ -80,7 +80,10 @@ int main(void) {
         InputEvent ev = get_input();
         switch (ev.type) {
         case INPUT_MENU:
-            /* code */
+            handle_menu_input(&main_menu, &ev.menu);
+            ui_panel_curses_draw(&main_menu);
+            redraw_cursor(&ta_ctx);
+            wrefresh(ta.cont_win);
             break;
         case INPUT_TYPING:
             TypingTestInput inp = ev.typing;
@@ -118,7 +121,6 @@ int main(void) {
             break;
         }
     }
-    // show statistics:
 
     ui_panel_curses_destroy(&main_menu);
     ui_panel_curses_destroy(&ta);
