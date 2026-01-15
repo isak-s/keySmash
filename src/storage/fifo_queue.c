@@ -12,6 +12,11 @@ FifoQueue fifo_q_new()
     };
 }
 
+void fifo_q_destroy(FifoQueue* q)
+{
+    while (fifo_q_pop(q) != NULL) {}
+}
+
 void fifo_q_push(FifoQueue* q, void* cmd, size_t size)
 {
     // copy and store by value

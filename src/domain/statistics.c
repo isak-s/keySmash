@@ -10,7 +10,7 @@ void update_wpm(Statistics* stat, TypingTestInput* inp)
 
 Statistics statistics_create()
 {
-    return (Statistics) { .nbr_correct = 0, .nbr_incorrect = 0, .wpm = 0};
+    return (Statistics) { .nbr_correct = 0, .nbr_incorrect = 0, .wpm = 0, .currword = ""};
 }
 
 void statistics_update(Statistics* stat, TypingTestInput* inp)

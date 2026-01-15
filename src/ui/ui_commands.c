@@ -83,7 +83,7 @@ static inline bool is_backspace(int ch)
 
 DrawCommand draw_command_from_input(const TypingTestInput* inp)
 {
-    if (is_backspace(inp->inputted)) {
+    if (inp->is_backspace) {
         return new_delete_char_command();
     } else if (!inp->is_correct) {
         return draw_incorrectly_inputted_command_new(inp->inputted);

@@ -14,4 +14,6 @@ UIElement ui_statistics_wpm_item_create(StatisticsItem* item);
 
 UIElement ui_statistics_incorrect_item_create(StatisticsItem* item);
 
+UIElement ui_statistics_currword_item_create(StatisticsItem* item);
+
 #endif

@@ -1,6 +1,6 @@
 #include <unity.h>
 
-#include "domain/typing_test_generator.h"
+#include "storage/file_loader.h"
 
 #include <stdlib.h>
 

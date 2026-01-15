@@ -14,6 +14,19 @@
 #include "menu.h"
 #include "domain/statistics.h"
 
+void statistics_set_curr_word(TypingTest* tt, Statistics* stat)
+{
+    int i = 0;
+    char c;
+    while ((c = typing_test_get_char(tt, tt->cursor + i)) != ' ' &&
+           c != '\0' &&
+           i < 32 - 1)
+    {
+        stat->currword[i++] = c;
+    }
+    stat->currword[i] = '\0';
+}
+
 int main(void) {
     initscr();
     init_color_scheme(stdscr, TRON_ORANGE);
@@ -52,15 +65,26 @@ int main(void) {
     ui_panel_curses_draw(&ta);
 
     // iterates over all chars in the text, and creates draw commands for all of them.
-    TypingTest tt = typing_test_new_english(
-        "At the moment we can't afford to go to other planets. We don't have the ships to take us there. There may be other people out there (I don't have any opinions about Life Out There, I just don't know) but it's nice to think that one could, even here and now, be whisked away just by hitchhiking."
-    );
+    TypingTest tt = typing_test_new_english();
     typing_test_execute_draw_queue(&tt, &ta_ctx);
     // user types over the already written text, but in a different color.
 
-    while(tt.idx < strlen(tt.text) - 1) {
-        TypingTestInput inp = get_input(&tt, &ta_ctx);
-        if (inp.inputted == 'q') {
+    statistics_set_curr_word(&tt, &stat);
+    ui_panel_curses_draw(&statistics_panel);
+    wrefresh(statistics_panel.cont_win);
+    redraw_cursor(&ta_ctx);
+    wrefresh(ta.cont_win);
+
+    while(true) {
+        TypingTestInput inp = get_input(&tt);
+
+        statistics_set_curr_word(&tt, &stat);
+        statistics_update(&stat, &inp);
+
+        DrawCommand dc = draw_command_from_input(&inp);
+        dc.execute(&dc, &ta_ctx);
+
+        if (ta_ctx.cx == 1 && ta_ctx.cy == 2) {
             bool scrolled = scroll_window_upwards(&ta_ctx);
             int x = ta_ctx.cx;
             int y = ta_ctx.cy;
@@ -70,10 +94,6 @@ int main(void) {
             ta_ctx.cx = x;
             ta_ctx.cy = y;
             redraw_cursor(&ta_ctx);
-        } else {
-            statistics_update(&stat, &inp);
-            DrawCommand dc = draw_command_from_input(&inp);
-            dc.execute(&dc, &ta_ctx);
         }
         // UICommand from input. can be tab, shift tab or enter to navigate menu.
         ui_panel_curses_draw(&statistics_panel);
@@ -85,6 +105,7 @@ int main(void) {
     ui_panel_curses_destroy(&main_menu);
     ui_panel_curses_destroy(&ta);
     ui_panel_curses_destroy(&statistics_panel);
+    typing_test_destroy(&tt);
     endwin();
     return 0;
 }

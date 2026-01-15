@@ -36,7 +36,8 @@ void test_draw_command_from_backspace_input()
     TypingTestInput inp = (TypingTestInput) {
         .inputted = KEY_BACKSPACE,
         .is_correct = true,
-        .time_since_test_start = 0
+        .time_since_test_start = 0,
+        .is_backspace = true
     };
     DrawCommand dc = draw_command_from_input(&inp);
     TEST_ASSERT_EQUAL_PTR(dc.execute, delete_prev_char);
