@@ -76,11 +76,6 @@ DrawCommand  new_delete_char_command()
     };
 }
 
-static inline bool is_backspace(int ch)
-{
-    return ch == KEY_BACKSPACE || ch == KEY_DC || ch == 127 || ch == '\b';
-}
-
 DrawCommand draw_command_from_input(const TypingTestInput* inp)
 {
     if (inp->is_backspace) {

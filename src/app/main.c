@@ -13,6 +13,7 @@
 #include "test_area.h"
 #include "menu.h"
 #include "domain/statistics.h"
+#include "backend/input_decoder.h"
 
 void statistics_set_curr_word(TypingTest* tt, Statistics* stat)
 {
@@ -76,29 +77,41 @@ int main(void) {
     wrefresh(ta.cont_win);
 
     while(true) {
-        TypingTestInput inp = get_input(&tt);
+        InputEvent ev = get_input();
 
-        statistics_set_curr_word(&tt, &stat);
-        statistics_update(&stat, &inp);
+        switch (ev.type) {
+        case INPUT_MENU:
+            /* code */
+            break;
+        case INPUT_TYPING:
+            TypingTestInput inp = ev.typing;
+            typing_test_handle_input(&tt, &inp);
 
-        DrawCommand dc = draw_command_from_input(&inp);
-        dc.execute(&dc, &ta_ctx);
+            statistics_set_curr_word(&tt, &stat);
+            statistics_update(&stat, &inp);
 
-        if (ta_ctx.cx == 1 && ta_ctx.cy == 2) {
-            bool scrolled = scroll_window_upwards(&ta_ctx);
-            int x = ta_ctx.cx;
-            int y = ta_ctx.cy;
-            ta_ctx.cx = 1;
-            ta_ctx.cy = ta_ctx.max_y;
-            if (scrolled) typing_test_execute_draw_queue(&tt, &ta_ctx);
-            ta_ctx.cx = x;
-            ta_ctx.cy = y;
-            redraw_cursor(&ta_ctx);
+            DrawCommand dc = draw_command_from_input(&inp);
+            dc.execute(&dc, &ta_ctx);
+
+            if (ta_ctx.cx == 1 && ta_ctx.cy == 2) {
+                bool scrolled = scroll_window_upwards(&ta_ctx);
+                int x = ta_ctx.cx;
+                int y = ta_ctx.cy;
+                ta_ctx.cx = 1;
+                ta_ctx.cy = ta_ctx.max_y;
+                if (scrolled)
+                    typing_test_execute_draw_queue(&tt, &ta_ctx);
+                ta_ctx.cx = x;
+                ta_ctx.cy = y;
+                redraw_cursor(&ta_ctx);
+            }
+            ui_panel_curses_draw(&statistics_panel);
+            wrefresh(statistics_panel.cont_win);
+            wrefresh(ta.cont_win);
+            break;
+        case INPUT_ILLEGAL:
+            break;
         }
-        // UICommand from input. can be tab, shift tab or enter to navigate menu.
-        ui_panel_curses_draw(&statistics_panel);
-        wrefresh(statistics_panel.cont_win);
-        wrefresh(ta.cont_win);
     }
     // show statistics:
 
