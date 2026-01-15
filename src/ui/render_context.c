@@ -29,7 +29,7 @@ void decrement_cursor(RenderContext* ctx)
 {
     ctx->cx--;
     if (ctx->cx < 1) {
-        if (ctx->cy == 1) {
+        if (ctx->cy == 0) {
             ctx->cx++;
             return;
         }
