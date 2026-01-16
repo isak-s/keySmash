@@ -2,6 +2,7 @@
 #define APP_STATE_H
 
 #include "domain/typing_test_mode.h"
+#include "ui/colors.h"
 
 typedef enum {
     APP_IN_TEST,
@@ -13,6 +14,7 @@ typedef enum {
 typedef struct {
     AppMode mode;
     TypingTestMode typing_test_mode;
+    ColorScheme color_scheme;
 } Appstate;
 
 #endif

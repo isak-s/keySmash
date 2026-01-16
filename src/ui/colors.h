@@ -3,12 +3,12 @@
 
 #include <ncurses.h>
 
-enum ColorScheme {
+typedef enum {
     DEFAULT,
     TRON_ORANGE,
     GRUVBOX,
     CYBERPUNK_FEVER_DREAM
-};
+} ColorScheme;
 
 enum Color {
     COLOR_PRIMARY = 1,
@@ -17,8 +17,8 @@ enum Color {
     // ,DETAIL
 };
 
-void init_color_scheme(WINDOW* win, int color_sheme);
+void init_color_scheme(WINDOW* win, ColorScheme color_sheme);
 
-void set_color_scheme(WINDOW* win, int color_scheme);
+void set_color_scheme(WINDOW* win, ColorScheme color_scheme);
 
 #endif

@@ -42,7 +42,8 @@ int main(void) {
 
     Appstate app_state = {
         .mode = APP_NEW_TEST,
-        .typing_test_mode = ENGLISH_200};
+        .typing_test_mode = ENGLISH_200,
+        .color_scheme = TRON_ORANGE};
 
     UIPanelCurses main_menu = menu_main_create(max_x);
     Statistics stat = statistics_create();
@@ -54,14 +55,14 @@ int main(void) {
     UIPanelCurses statistics_panel = statistics_panel_create(max_x, stat_y, &stat);
 
 
-    init_color_scheme(ta.border_win, TRON_ORANGE);
-    init_color_scheme(ta.cont_win, TRON_ORANGE);
+    init_color_scheme(ta.border_win, app_state.color_scheme);
+    init_color_scheme(ta.cont_win, app_state.color_scheme);
 
-    init_color_scheme(main_menu.border_win, TRON_ORANGE);
-    init_color_scheme(main_menu.cont_win, TRON_ORANGE);
+    init_color_scheme(main_menu.border_win, app_state.color_scheme);
+    init_color_scheme(main_menu.cont_win, app_state.color_scheme);
 
-    init_color_scheme(statistics_panel.border_win, TRON_ORANGE);
-    init_color_scheme(statistics_panel.cont_win, TRON_ORANGE);
+    init_color_scheme(statistics_panel.border_win, app_state.color_scheme);
+    init_color_scheme(statistics_panel.cont_win, app_state.color_scheme);
 
     RenderContext ta_ctx = render_context_new(ta.cont_win);
 
@@ -69,22 +70,23 @@ int main(void) {
     ui_panel_curses_draw(&main_menu);
     ui_panel_curses_draw(&ta);
 
-    // iterates over all chars in the text, and creates draw commands for all of them.
-    TypingTest tt = typing_test_new_english();
-    typing_test_execute_draw_queue(&tt, &ta_ctx);
-    // user types over the already written text, but in a different color.
-
-    statistics_set_curr_word(&tt, &stat);
-    ui_panel_curses_draw(&statistics_panel);
-    wrefresh(statistics_panel.cont_win);
-    redraw_cursor(&ta_ctx);
-    wrefresh(ta.cont_win);
-
+    TypingTest tt;
     while(app_state.mode != APP_QUIT) {
         switch (app_state.mode)
         {
         case APP_NEW_TEST:
-            /* code */
+            // statistics_reset(&stat);
+            tt = typing_test_new_english();
+            ta_ctx = render_context_new(ta.cont_win);
+            wclear(ta_ctx.win);
+            typing_test_execute_draw_queue(&tt, &ta_ctx);
+            statistics_set_curr_word(&tt, &stat);
+            ui_panel_curses_draw(&statistics_panel);
+            wrefresh(statistics_panel.cont_win);
+            redraw_cursor(&ta_ctx);
+            wrefresh(ta.cont_win);
+            // set app_next state instead, and set app_state to next state at start of while loop
+            app_state.mode = APP_IN_TEST;
             break;
         case APP_IN_TEST:
             InputEvent ev = get_input();
