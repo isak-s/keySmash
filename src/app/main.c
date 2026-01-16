@@ -92,7 +92,6 @@ int main(void) {
                 ev.type = INPUT_ILLEGAL;
                 break;
             }
-
             typing_test_handle_input(&tt, &inp);
 
             statistics_set_curr_word(&tt, &stat);
@@ -103,15 +102,7 @@ int main(void) {
 
             if (ta_ctx.cx == 1 && ta_ctx.cy == 2) {
                 bool scrolled = scroll_window_upwards(&ta_ctx);
-                int x = ta_ctx.cx;
-                int y = ta_ctx.cy;
-                ta_ctx.cx = 1;
-                ta_ctx.cy = ta_ctx.max_y;
-                if (scrolled)
-                    typing_test_execute_draw_queue(&tt, &ta_ctx);
-                ta_ctx.cx = x;
-                ta_ctx.cy = y;
-                redraw_cursor(&ta_ctx);
+                if (scrolled) typing_test_execute_draw_queue(&tt, &ta_ctx);
             }
             ui_panel_curses_draw(&statistics_panel);
             wrefresh(statistics_panel.cont_win);

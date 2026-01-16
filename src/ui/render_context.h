@@ -9,6 +9,8 @@ typedef struct {
     int cy;
     int max_x;
     int max_y;
+    int last_x_drawn;
+    int last_y_drawn;
     int nbr_scrolls;
 } RenderContext;
 

@@ -57,6 +57,9 @@ void typing_test_execute_draw_queue(TypingTest* tt, RenderContext* ctx)
 {
     int prev_x = ctx->cx;
     int prev_y = ctx->cy;
+
+    ctx->cx = ctx->last_x_drawn;
+    ctx->cy = ctx->last_y_drawn;
     if (render_context_out_of_space(ctx)) return;
 
     DrawCommand* cmd = fifo_q_pop(&tt->draw_queue);
@@ -69,10 +72,12 @@ void typing_test_execute_draw_queue(TypingTest* tt, RenderContext* ctx)
         cmd = fifo_q_pop(&tt->draw_queue);
     }
     // set cursor to prev pos before drawing so that the user types over the text.
+    ctx->last_x_drawn = ctx->cx;
+    ctx->last_y_drawn = ctx->cy;
     ctx->cx = prev_x;
     ctx->cy = prev_y;
     wmove(ctx->win, ctx->cy, ctx->cx);
-
+    redraw_cursor(ctx);
     wrefresh(ctx->win);
 }
 

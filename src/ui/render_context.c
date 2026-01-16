@@ -9,6 +9,8 @@ RenderContext render_context_new(WINDOW* win)
         .cy = 1,
         .win = win,
         .nbr_scrolls = 0,
+        .last_x_drawn = 1,
+        .last_y_drawn = 1,
         .max_x = getmaxx(win) - UI_BORDER_PADDING,  // because of the border
         .max_y = getmaxy(win) - UI_BORDER_PADDING  // because of the border
     };
@@ -53,6 +55,7 @@ bool scroll_window_upwards(RenderContext* ctx)
     if (!ctx->cy) return false; // if we are already at the top, don't scroll!
     wscrl(ctx->win, 1);
     ctx->cy--;
+    ctx->last_y_drawn--;
     ctx->nbr_scrolls++;
     redraw_cursor(ctx);
     wrefresh(ctx->win);

@@ -11,7 +11,7 @@ UIPanelCurses test_area_create(int max_x, int min_y, int max_y)
 
     ta->x = 5;
     ta->y = min_y;
-    ta->height = max_y / 3;
+    ta->height = max_y / 3; // 7
     ta->width = max_x - 10;
     return ui_panel_curses_create(ta);
 }

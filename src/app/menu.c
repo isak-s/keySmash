@@ -9,7 +9,7 @@ UIPanelCurses menu_main_create(int max_x)
     int element_count = 4;
 
 
-    MenuItem item1 = { .row = 0, .text = "K_E_Y_S_M_A_S_H", .enabled = false };
+    MenuItem item1 = { .row = 0, .text = "K-E-Y-S-M-A-S-H", .enabled = false };
     MenuItem item2 = { .row = 1, .text = "Statistics", .enabled = true };
     MenuItem item4 = { .row = 2, .text = "Mode: Quote english", .enabled = true };
     MenuItem item3 = { .row = 3, .text = "QUIT(esc)", .enabled = true };
