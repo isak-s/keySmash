@@ -14,6 +14,7 @@
 #include "menu.h"
 #include "domain/statistics.h"
 #include "backend/input_decoder.h"
+#include "app_context.h"
 
 void statistics_set_curr_word(TypingTest* tt, Statistics* stat)
 {
@@ -29,100 +30,62 @@ void statistics_set_curr_word(TypingTest* tt, Statistics* stat)
 }
 
 int main(void) {
-    initscr();
-    init_color_scheme(stdscr, TRON_ORANGE);
+    AppContext app = { .state = APP_STARTUP };
 
-    cbreak();
-    noecho();
-    keypad(stdscr, TRUE);
-    refresh();
-
-    int max_x, max_y;
-    getmaxyx(stdscr, max_y, max_x);
-
-    Appstate app_state = {
-        .mode = APP_NEW_TEST,
-        .typing_test_mode = ENGLISH_200,
-        .color_scheme = TRON_ORANGE};
-
-    UIPanelCurses main_menu = menu_main_create(max_x);
-    Statistics stat = statistics_create();
-
-    int ta_y = main_menu.panel->element_count + UI_BORDER_PADDING * 2;
-    int stat_y = max_y / 3 + ta_y;
-
-    UIPanelCurses ta = test_area_create(max_x, ta_y, max_y);
-    UIPanelCurses statistics_panel = statistics_panel_create(max_x, stat_y, &stat);
-
-
-    init_color_scheme(ta.border_win, app_state.color_scheme);
-    init_color_scheme(ta.cont_win, app_state.color_scheme);
-
-    init_color_scheme(main_menu.border_win, app_state.color_scheme);
-    init_color_scheme(main_menu.cont_win, app_state.color_scheme);
-
-    init_color_scheme(statistics_panel.border_win, app_state.color_scheme);
-    init_color_scheme(statistics_panel.cont_win, app_state.color_scheme);
-
-    RenderContext ta_ctx = render_context_new(ta.cont_win);
-
-    ui_panel_curses_draw(&statistics_panel);
-    ui_panel_curses_draw(&main_menu);
-    ui_panel_curses_draw(&ta);
-
-    TypingTest tt;
-    while(app_state.mode != APP_QUIT) {
-        switch (app_state.mode)
+    while(app.state != APP_QUIT) {
+        switch (app.state)
         {
+        case APP_STARTUP:
+            init_app(&app);
+            break;
         case APP_NEW_TEST:
             // statistics_reset(&stat);
-            tt = typing_test_new_english();
-            ta_ctx = render_context_new(ta.cont_win);
-            wclear(ta_ctx.win);
-            typing_test_execute_draw_queue(&tt, &ta_ctx);
-            statistics_set_curr_word(&tt, &stat);
-            ui_panel_curses_draw(&statistics_panel);
-            wrefresh(statistics_panel.cont_win);
-            redraw_cursor(&ta_ctx);
-            wrefresh(ta.cont_win);
-            // set app_next state instead, and set app_state to next state at start of while loop
-            app_state.mode = APP_IN_TEST;
+            app.typing_test = typing_test_new_english();
+            app.ta_ctx = render_context_new(app.testarea.cont_win);
+            wclear(app.ta_ctx.win);
+            typing_test_execute_draw_queue(&app.typing_test, &app.ta_ctx);
+            statistics_set_curr_word(&app.typing_test, &app.statistics);
+            ui_panel_curses_draw(&app.statistics_panel);
+            wrefresh(app.statistics_panel.cont_win);
+            redraw_cursor(&app.ta_ctx);
+            wrefresh(app.testarea.cont_win);
+            app.next_state = APP_IN_TEST;
             break;
         case APP_IN_TEST:
             InputEvent ev = get_input();
             switch (ev.type)
             {
             case INPUT_MENU:
-                handle_menu_input(&main_menu, &ev.menu, &app_state);
-                ui_panel_curses_draw(&main_menu);
-                redraw_cursor(&ta_ctx);
-                wrefresh(ta.cont_win);
+                handle_menu_input(&app.main_menu, &ev.menu, &app);
+                ui_panel_curses_draw(&app.main_menu);
+                redraw_cursor(&app.ta_ctx);
+                wrefresh(app.testarea.cont_win);
                 break;
             case INPUT_TYPING:
                 TypingTestInput inp = ev.typing;
 
-                if (inp.is_backspace && !backspace_allowed(&ta_ctx))
+                if (inp.is_backspace && !backspace_allowed(&app.ta_ctx))
                 {
                     ev.type = INPUT_ILLEGAL;
                     break;
                 }
-                typing_test_handle_input(&tt, &inp);
+                typing_test_handle_input(&app.typing_test, &inp);
 
-                statistics_set_curr_word(&tt, &stat);
-                statistics_update(&stat, &inp);
+                statistics_set_curr_word(&app.typing_test, &app.statistics);
+                statistics_update(&app.statistics, &inp);
 
                 DrawCommand dc = draw_command_from_input(&inp);
-                dc.execute(&dc, &ta_ctx);
+                dc.execute(&dc, &app.ta_ctx);
 
-                if (ta_ctx.cx == 1 && ta_ctx.cy == 2)
+                if (app.ta_ctx.cx == 1 && app.ta_ctx.cy == 2)
                 {
-                    bool scrolled = scroll_window_upwards(&ta_ctx);
+                    bool scrolled = scroll_window_upwards(&app.ta_ctx);
                     if (scrolled)
-                        typing_test_execute_draw_queue(&tt, &ta_ctx);
+                        typing_test_execute_draw_queue(&app.typing_test, &app.ta_ctx);
                 }
-                ui_panel_curses_draw(&statistics_panel);
-                wrefresh(statistics_panel.cont_win);
-                wrefresh(ta.cont_win);
+                ui_panel_curses_draw(&app.statistics_panel);
+                wrefresh(app.statistics_panel.cont_win);
+                wrefresh(app.testarea.cont_win);
                 break;
             case INPUT_ILLEGAL:
                 break;
@@ -130,13 +93,9 @@ int main(void) {
         default:
             break;
         }
-
+        app.state = app.next_state;
     }
 
-    ui_panel_curses_destroy(&main_menu);
-    ui_panel_curses_destroy(&ta);
-    ui_panel_curses_destroy(&statistics_panel);
-    typing_test_destroy(&tt);
-    endwin();
+    destroy_app(&app);
     return 0;
 }

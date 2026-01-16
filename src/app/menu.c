@@ -4,24 +4,24 @@
 #include <stdlib.h>
 #include "ui/ui_constants.h"
 
-void menu_item_restart_action(Appstate* app_state)
+void menu_item_restart_action(AppContext* app)
 {
-    app_state->mode = APP_NEW_TEST;
+    app->next_state = APP_NEW_TEST;
 }
 
-void menu_item_quit_action(Appstate* app_state)
+void menu_item_quit_action(AppContext* app)
 {
-    app_state->mode = APP_QUIT;
+    app->next_state = APP_QUIT;
 }
 
-void menu_item_statistics_action(Appstate* app_state)
+void menu_item_statistics_action(AppContext* app)
 {
-    app_state->mode = APP_STATISTICS;
+    app->next_state = APP_STATISTICS;
 }
 // refactor!
-void menu_item_test_mode_select_action(Appstate* app_state)
+void menu_item_test_mode_select_action(AppContext* app)
 {
-    app_state->typing_test_mode = ENGLISH_200;
+    app->typing_test_mode = ENGLISH_200;
 }
 
 UIPanelCurses menu_main_create(int max_x)
@@ -72,7 +72,7 @@ UIPanelCurses menu_main_create(int max_x)
     return ui_panel_curses_create(menu);
 }
 
-void handle_menu_input(UIPanelCurses* menu, MenuInput* inp, Appstate* app_state)
+void handle_menu_input(UIPanelCurses* menu, MenuInput* inp, AppContext* app)
 {
     switch (inp->type)
     {
@@ -86,7 +86,7 @@ void handle_menu_input(UIPanelCurses* menu, MenuInput* inp, Appstate* app_state)
         break;
     case M_ENTER:
         MenuItem* item = menu->panel->elements[menu->panel->selected].impl;
-        if (item->enabled) item->action(app_state);
+        if (item->enabled) item->action(app);
     default:
         break;
     }
