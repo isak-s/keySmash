@@ -4,21 +4,62 @@
 #include <stdlib.h>
 #include "ui/ui_constants.h"
 
+void menu_item_restart_action(Appstate* app_state)
+{
+    app_state->mode = APP_NEW_TEST;
+}
+
+void menu_item_quit_action(Appstate* app_state)
+{
+    app_state->mode = APP_QUIT;
+}
+
+void menu_item_statistics_action(Appstate* app_state)
+{
+    app_state->mode = APP_STATISTICS;
+}
+// refactor!
+void menu_item_test_mode_select_action(Appstate* app_state)
+{
+    app_state->typing_test_mode = ENGLISH_200;
+}
+
 UIPanelCurses menu_main_create(int max_x)
 {
-    int element_count = 4;
+    int element_count = 5;
 
-
-    MenuItem item1 = { .row = 0, .text = "K-E-Y-S-M-A-S-H", .enabled = false };
-    MenuItem item2 = { .row = 1, .text = "Statistics", .enabled = true };
-    MenuItem item4 = { .row = 2, .text = "Mode: Quote english", .enabled = true };
-    MenuItem item3 = { .row = 3, .text = "QUIT(esc)", .enabled = true };
+    MenuItem title = {
+        .row = 0,
+        .text = "K-E-Y-S-M-A-S-H",
+        .enabled = false,
+        .action = menu_item_restart_action};
+    MenuItem statistics = {
+        .row = 1,
+        .text = "Statistics",
+        .enabled = true,
+        .action = menu_item_statistics_action};
+    MenuItem mode = {
+        .row = 2,
+        .text = "Mode: Quote english",
+        .enabled = true,
+        .action = menu_item_test_mode_select_action};
+    MenuItem restart = {
+        .row = 3,
+        .text = "restart",
+        .enabled = true,
+        .action = menu_item_restart_action};
+    MenuItem quit = {
+        .row = 4,
+        .text = "QUIT(esc)",
+        .enabled = true,
+        .action = menu_item_quit_action};
 
     UIElement* elements = malloc(sizeof(UIElement) * element_count);
-    elements[0] = ui_menu_item_create(&item1);
-    elements[1] = ui_menu_item_create(&item4);
-    elements[2] = ui_menu_item_create(&item2);
-    elements[3] = ui_menu_item_create(&item3);
+    elements[0] = ui_menu_item_create(&title);
+    elements[1] = ui_menu_item_create(&statistics);
+    elements[2] = ui_menu_item_create(&mode);
+    elements[3] = ui_menu_item_create(&restart);
+    elements[4] = ui_menu_item_create(&quit);
 
     UIPanel *menu = (UIPanel *)malloc(sizeof(UIPanel));
     menu->element_count = element_count;
@@ -31,24 +72,21 @@ UIPanelCurses menu_main_create(int max_x)
     return ui_panel_curses_create(menu);
 }
 
-void handle_menu_input(UIPanelCurses* menu, MenuInput* inp)
+void handle_menu_input(UIPanelCurses* menu, MenuInput* inp, Appstate* app_state)
 {
     switch (inp->type)
     {
     case M_ARROW_DOWN:
-        /* code */
         menu->panel->selected++;
         menu->panel->selected %= menu->panel->element_count;
         break;
     case M_ARROW_UP:
-        /* code */
         menu->panel->selected--;
         menu->panel->selected %= menu->panel->element_count;
         break;
     case M_ENTER:
-        // execute the function at the selected index.
-        endwin();
-        exit(0);
+        MenuItem* item = menu->panel->elements[menu->panel->selected].impl;
+        if (item->enabled) item->action(app_state);
     default:
         break;
     }

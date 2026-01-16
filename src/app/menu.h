@@ -7,13 +7,15 @@
 #include "ui/ui_panel_curses.h"
 #include "domain/statistics.h"
 #include "backend/menu_input.h"
+#include "app_state.h"
+
+typedef void (*MenuAction)(Appstate* app_state);
 
 typedef struct {
     const char* text;
     bool enabled;
     int row;
-
-    // MenuFunction fn
+    MenuAction action;
 } MenuItem;
 
 typedef struct {
@@ -27,7 +29,7 @@ typedef struct {
 
 UIPanelCurses menu_main_create(int max_x);
 
-void handle_menu_input(UIPanelCurses* menu, MenuInput* inp);
+void handle_menu_input(UIPanelCurses* menu, MenuInput* inp, Appstate* app_state);
 
 UIPanelCurses statistics_panel_create(int max_x, int y, Statistics* stat);
 

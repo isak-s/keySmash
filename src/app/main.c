@@ -40,6 +40,10 @@ int main(void) {
     int max_x, max_y;
     getmaxyx(stdscr, max_y, max_x);
 
+    Appstate app_state = {
+        .mode = APP_NEW_TEST,
+        .typing_test_mode = ENGLISH_200};
+
     UIPanelCurses main_menu = menu_main_create(max_x);
     Statistics stat = statistics_create();
 
@@ -76,41 +80,55 @@ int main(void) {
     redraw_cursor(&ta_ctx);
     wrefresh(ta.cont_win);
 
-    while(true) {
-        InputEvent ev = get_input();
-        switch (ev.type) {
-        case INPUT_MENU:
-            handle_menu_input(&main_menu, &ev.menu);
-            ui_panel_curses_draw(&main_menu);
-            redraw_cursor(&ta_ctx);
-            wrefresh(ta.cont_win);
+    while(app_state.mode != APP_QUIT) {
+        switch (app_state.mode)
+        {
+        case APP_NEW_TEST:
+            /* code */
             break;
-        case INPUT_TYPING:
-            TypingTestInput inp = ev.typing;
+        case APP_IN_TEST:
+            InputEvent ev = get_input();
+            switch (ev.type)
+            {
+            case INPUT_MENU:
+                handle_menu_input(&main_menu, &ev.menu, &app_state);
+                ui_panel_curses_draw(&main_menu);
+                redraw_cursor(&ta_ctx);
+                wrefresh(ta.cont_win);
+                break;
+            case INPUT_TYPING:
+                TypingTestInput inp = ev.typing;
 
-            if (inp.is_backspace && !backspace_allowed(&ta_ctx)) {
-                ev.type = INPUT_ILLEGAL;
+                if (inp.is_backspace && !backspace_allowed(&ta_ctx))
+                {
+                    ev.type = INPUT_ILLEGAL;
+                    break;
+                }
+                typing_test_handle_input(&tt, &inp);
+
+                statistics_set_curr_word(&tt, &stat);
+                statistics_update(&stat, &inp);
+
+                DrawCommand dc = draw_command_from_input(&inp);
+                dc.execute(&dc, &ta_ctx);
+
+                if (ta_ctx.cx == 1 && ta_ctx.cy == 2)
+                {
+                    bool scrolled = scroll_window_upwards(&ta_ctx);
+                    if (scrolled)
+                        typing_test_execute_draw_queue(&tt, &ta_ctx);
+                }
+                ui_panel_curses_draw(&statistics_panel);
+                wrefresh(statistics_panel.cont_win);
+                wrefresh(ta.cont_win);
+                break;
+            case INPUT_ILLEGAL:
                 break;
             }
-            typing_test_handle_input(&tt, &inp);
-
-            statistics_set_curr_word(&tt, &stat);
-            statistics_update(&stat, &inp);
-
-            DrawCommand dc = draw_command_from_input(&inp);
-            dc.execute(&dc, &ta_ctx);
-
-            if (ta_ctx.cx == 1 && ta_ctx.cy == 2) {
-                bool scrolled = scroll_window_upwards(&ta_ctx);
-                if (scrolled) typing_test_execute_draw_queue(&tt, &ta_ctx);
-            }
-            ui_panel_curses_draw(&statistics_panel);
-            wrefresh(statistics_panel.cont_win);
-            wrefresh(ta.cont_win);
-            break;
-        case INPUT_ILLEGAL:
+        default:
             break;
         }
+
     }
 
     ui_panel_curses_destroy(&main_menu);
