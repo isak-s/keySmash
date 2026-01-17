@@ -28,15 +28,15 @@ typedef struct TypingTest {
 
 TypingTest typing_test_new_english();
 
-TypingTestInput get_input(TypingTest* tt);
+void typing_test_handle_input(TypingTest* tt, TypingTestInput* input);
 
 void typing_test_execute_draw_queue(TypingTest* tt, RenderContext* ctx);
 
 void typing_test_destroy(TypingTest* tt);
 
+void typing_test_get_curr_word(TypingTest* tt, char out[32]);
+
 // really only visible so i can test them:
 void typing_test_refill_buffer(TypingTest* tt);
 char typing_test_get_char(const TypingTest* tt, size_t idx);
-TypingTestInput typing_test_process_char(TypingTest* tt, int ch);
-
 #endif

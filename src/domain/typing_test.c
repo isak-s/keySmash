@@ -16,6 +16,18 @@ char typing_test_get_char(const TypingTest* tt, size_t idx)
     return tt->text_buf[(tt->buf_start + idx) % TEXT_BUFFER_CAPACITY];
 }
 
+void typing_test_get_curr_word(TypingTest* tt, char out[32])
+{
+    int i = 0;
+    char c;
+    while ((c = typing_test_get_char(tt, tt->cursor + i)) != ' ' &&
+           c != '\0' &&
+           i < 32 - 1) {
+        out[i++] = c;
+    }
+    out[i] = '\0';
+}
+
 void typing_test_append_word(TypingTest* tt, const char* word)
 {
     for (const char* c = word; *c; c++) {
@@ -57,6 +69,9 @@ void typing_test_execute_draw_queue(TypingTest* tt, RenderContext* ctx)
 {
     int prev_x = ctx->cx;
     int prev_y = ctx->cy;
+
+    ctx->cx = ctx->last_x_drawn;
+    ctx->cy = ctx->last_y_drawn;
     if (render_context_out_of_space(ctx)) return;
 
     DrawCommand* cmd = fifo_q_pop(&tt->draw_queue);
@@ -69,38 +84,24 @@ void typing_test_execute_draw_queue(TypingTest* tt, RenderContext* ctx)
         cmd = fifo_q_pop(&tt->draw_queue);
     }
     // set cursor to prev pos before drawing so that the user types over the text.
+    ctx->last_x_drawn = ctx->cx;
+    ctx->last_y_drawn = ctx->cy;
     ctx->cx = prev_x;
     ctx->cy = prev_y;
     wmove(ctx->win, ctx->cy, ctx->cx);
-
+    redraw_cursor(ctx);
     wrefresh(ctx->win);
 }
 
-static inline bool is_backspace(int ch)
+void typing_test_handle_input(TypingTest* tt, TypingTestInput* input)
 {
-    return ch == KEY_BACKSPACE || ch == KEY_DC || ch == 127 || ch == '\b';
-}
+    input->time_since_test_start = now_ms() - tt->start_timestamp;
 
-/* This function will await until a char is inputted. Halts the rest of the program!!! */
-TypingTestInput get_input(TypingTest* tt)
-{
-   int ch = getch();
-   return typing_test_process_char(tt, ch);
-}
-
-TypingTestInput typing_test_process_char(TypingTest* tt, int ch)
-{
-    TypingTestInput input;
-
-    input.inputted = ch;
-    input.is_backspace = is_backspace(ch);
-    input.time_since_test_start = now_ms() - tt->start_timestamp;
-
-    if (input.is_backspace) {
+    if (input->is_backspace) {
         if (tt->cursor > 0) {
             tt->cursor--;
         }
-        input.is_correct = true;
+        input->is_correct = true;
     } else {
         if (tt->cursor > TEXT_BUFFER_CAPACITY / 3) {
             tt->buf_start = (tt->buf_start + 1) % TEXT_BUFFER_CAPACITY;
@@ -109,14 +110,12 @@ TypingTestInput typing_test_process_char(TypingTest* tt, int ch)
         }
 
         int expected = typing_test_get_char(tt, tt->cursor);
-        input.is_correct = (expected == ch);
+        input->is_correct = (expected == input->inputted);
         tt->cursor++;
     }
 
     typing_test_refill_buffer(tt);
     fifo_q_push(&tt->input_history, &input, sizeof(TypingTestInput));
-
-    return input;
 }
 
 // add parameter words to exclude

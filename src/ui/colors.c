@@ -30,7 +30,7 @@ void init_cyberpunk_fever_dream_color_scheme()
     init_pair(COLOR_INCORRECT, COLOR_YELLOW, -1);
 }
 
-void set_color_scheme(WINDOW* win, int color_scheme)
+void set_color_scheme(WINDOW* win, ColorScheme color_scheme)
 {
     switch (color_scheme)
     {
@@ -53,7 +53,7 @@ void set_color_scheme(WINDOW* win, int color_scheme)
 }
 
 /* sets the color scheme to a predefined setting */
-void init_color_scheme(WINDOW* win, int color_scheme)
+void init_color_scheme(WINDOW* win, ColorScheme color_scheme)
 {
     if (!has_colors())
     {

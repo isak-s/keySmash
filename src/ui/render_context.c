@@ -8,7 +8,9 @@ RenderContext render_context_new(WINDOW* win)
         .cx = 1,
         .cy = 1,
         .win = win,
-        .nbr_scrolls = 0,  // this is ugly as shit. Typingtest tracks text idx via the render context and needs to know if we scrolled or not.
+        .nbr_scrolls = 0,
+        .last_x_drawn = 1,
+        .last_y_drawn = 1,
         .max_x = getmaxx(win) - UI_BORDER_PADDING,  // because of the border
         .max_y = getmaxy(win) - UI_BORDER_PADDING  // because of the border
     };
@@ -53,9 +55,26 @@ bool scroll_window_upwards(RenderContext* ctx)
     if (!ctx->cy) return false; // if we are already at the top, don't scroll!
     wscrl(ctx->win, 1);
     ctx->cy--;
+    ctx->last_y_drawn--;
     ctx->nbr_scrolls++;
     redraw_cursor(ctx);
     wrefresh(ctx->win);
 
+    return true;
+}
+// always allowed except when there is no previous text
+bool backspace_allowed(RenderContext* ctx)
+{
+    bool has_history = ctx->nbr_scrolls >= 1;
+    bool at_line_start = ctx->cx == 1;
+    bool at_first_line = ctx->cy == 0;
+    bool at_second_line = ctx->cy == 1;
+    if (at_line_start) {
+        if (at_first_line) {
+            return false;
+        } else if (at_second_line && !has_history) {
+            return false;
+        }
+    }
     return true;
 }

@@ -9,7 +9,7 @@ typedef struct {
     int height;
     int x;
     int y;
-
+    int selected;
     UIElement* elements;
     size_t element_count;
 } UIPanel;
