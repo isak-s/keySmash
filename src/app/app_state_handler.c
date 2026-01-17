@@ -74,5 +74,4 @@ void app_handle_quit(AppContext* app)
 {
     destroy_app(app);
     app->next_state = APP_TERMINATED;
-    app = NULL;
 }
