@@ -15,4 +15,6 @@ Statistics statistics_create();
 
 void statistics_update(Statistics* stat, TypingTestInput* inp);
 
+void statistics_reset(Statistics* stat);
+
 #endif

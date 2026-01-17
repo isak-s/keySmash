@@ -16,6 +16,18 @@ char typing_test_get_char(const TypingTest* tt, size_t idx)
     return tt->text_buf[(tt->buf_start + idx) % TEXT_BUFFER_CAPACITY];
 }
 
+void typing_test_get_curr_word(TypingTest* tt, char out[32])
+{
+    int i = 0;
+    char c;
+    while ((c = typing_test_get_char(tt, tt->cursor + i)) != ' ' &&
+           c != '\0' &&
+           i < 32 - 1) {
+        out[i++] = c;
+    }
+    out[i] = '\0';
+}
+
 void typing_test_append_word(TypingTest* tt, const char* word)
 {
     for (const char* c = word; *c; c++) {

@@ -20,10 +20,8 @@ void init_app_color_sceme(AppContext* app)
 {
     init_color_scheme(app->testarea.border_win, app->color_scheme);
     init_color_scheme(app->testarea.cont_win, app->color_scheme);
-
     init_color_scheme(app->main_menu.border_win, app->color_scheme);
     init_color_scheme(app->main_menu.cont_win, app->color_scheme);
-
     init_color_scheme(app->statistics_panel.border_win, app->color_scheme);
     init_color_scheme(app->statistics_panel.cont_win, app->color_scheme);
 }

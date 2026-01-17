@@ -14,7 +14,8 @@ typedef enum {
     APP_IN_TEST,
     APP_TEST_FINISHED,
     APP_STATISTICS,
-    APP_QUIT
+    APP_QUIT,
+    APP_TERMINATED
 } AppState;
 
 typedef struct {
