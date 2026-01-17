@@ -138,6 +138,13 @@ char** init_english_200_wordset()
     return wordset;
 }
 
+int64_t typing_test_time_left(TypingTest* tt)
+{
+    int64_t elapsed = tt->start_timestamp ? now_ms() - tt->start_timestamp : 0;
+    int64_t remaining = tt->time_limit - elapsed;
+    return remaining;
+}
+
 TypingTest typing_test_new_english()
 {
     TypingTest tt = (TypingTest){
@@ -145,9 +152,10 @@ TypingTest typing_test_new_english()
         .language = "english",
         .wordset = init_english_200_wordset(),
         .get_next_word = get_random_word_english_200,
-        .start_timestamp = now_ms(),
+        // .start_timestamp = now_ms(), is set upon first input
         .draw_queue = fifo_q_new(),
-        .input_history = fifo_q_new()};
+        .input_history = fifo_q_new(),
+        .time_limit = 15 * 1000}; // 15 seconds
     typing_test_refill_buffer(&tt);
     //typing_test_init_draw_queue(&tt);
     return tt;

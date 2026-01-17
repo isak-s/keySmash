@@ -4,6 +4,8 @@
 #include "menu.h"
 #include "domain/typing_test.h"
 #include "ui/ui_commands.h"
+#include "domain/clock_helper.h"
+#include "ui/ui_misc.h"
 
 
 void app_handle_startup(AppContext* app)
@@ -32,6 +34,21 @@ void app_handle_new_test(AppContext* app)
 void app_handle_in_test(AppContext* app)
 {
     InputEvent ev = get_input();
+
+    // how can i do this without waiting for the input?
+    if (app->typing_test.start_timestamp &&
+        now_ms() - app->typing_test.start_timestamp > app->typing_test.time_limit) {
+        // refactor to app->typing_test.is_finished which is a function pointer
+        // to a predicate that is different for quote and time
+        app->next_state = APP_TEST_FINISHED;
+        return;
+    }
+
+    ui_draw_typing_test_time_left(
+        &app->typing_test,
+        app->testarea.border_win,
+        app->ta_ctx.max_x);
+
     switch (ev.type)
     {
     case INPUT_MENU:
@@ -41,6 +58,9 @@ void app_handle_in_test(AppContext* app)
         wrefresh(app->testarea.cont_win);
         break;
     case INPUT_TYPING:
+        if (!app->typing_test.start_timestamp) {
+            app->typing_test.start_timestamp = now_ms();
+        }
         TypingTestInput inp = ev.typing;
 
         if (inp.is_backspace && !backspace_allowed(&app->ta_ctx)) {
@@ -68,6 +88,39 @@ void app_handle_in_test(AppContext* app)
     case INPUT_ILLEGAL:
         break;
     }
+}
+
+void app_handle_test_finished(AppContext* app)
+{
+    ui_panel_curses_draw(&app->statistics_panel);
+    wrefresh(app->statistics_panel.cont_win);
+
+    wclear(app->ta_ctx.win);
+    wrefresh(app->ta_ctx.win);
+    snprintf(app->statistics.currword,
+             sizeof(app->statistics.currword),
+             "%s",
+             "test finished");
+
+    InputEvent ev = get_input();
+    switch (ev.type)
+    {
+    case INPUT_MENU:
+        handle_menu_input(&app->main_menu, &ev.menu, app);
+        ui_panel_curses_draw(&app->main_menu);
+        redraw_cursor(&app->ta_ctx);
+        wrefresh(app->testarea.cont_win);
+        break;
+    case INPUT_TYPING:
+        break;
+    case INPUT_ILLEGAL:
+        break;
+    }
+}
+
+void app_play_replay(AppContext* app)
+{
+    (void) app;
 }
 
 void app_handle_quit(AppContext* app)

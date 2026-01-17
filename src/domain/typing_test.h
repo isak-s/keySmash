@@ -11,6 +11,7 @@ typedef char* (*RandomWordFn)(struct TypingTest*);
 
 typedef struct TypingTest {
     int64_t     start_timestamp;
+    int64_t     time_limit;  // in ms
     const char* language;
     char        text_buf[TEXT_BUFFER_CAPACITY];
 
@@ -35,6 +36,8 @@ void typing_test_execute_draw_queue(TypingTest* tt, RenderContext* ctx);
 void typing_test_destroy(TypingTest* tt);
 
 void typing_test_get_curr_word(TypingTest* tt, char out[32]);
+
+int64_t typing_test_time_left(TypingTest* tt);
 
 // really only visible so i can test them:
 void typing_test_refill_buffer(TypingTest* tt);

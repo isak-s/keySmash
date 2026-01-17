@@ -1,0 +1,64 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug App (ncurses)",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/bin/main",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "stopAtEntry": false,
+
+            "environment": [],
+
+            "console": "externalTerminal",
+            "MIMode": "gdb",
+
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+
+            "preLaunchTask": "build",
+
+            "miDebuggerPath": "/usr/bin/gdb"
+        },
+
+        {
+            "name": "Debug Single Test",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/tests/${input:testBinary}",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "stopAtEntry": false,
+
+            "externalConsole": true,
+            "MIMode": "gdb",
+
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+
+            "preLaunchTask": "build-tests",
+
+            "miDebuggerPath": "/usr/bin/gdb"
+        }
+    ],
+
+    "inputs": [
+        {
+            "id": "testBinary",
+            "type": "promptString",
+            "description": "Enter test binary name (e.g. test_typing_test)"
+        }
+    ]
+}

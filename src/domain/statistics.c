@@ -3,6 +3,8 @@
 // minutes = ms / 60000
 void update_wpm(Statistics* stat, TypingTestInput* inp)
 {
+    // do not calculate for the very first input
+    if (inp->time_since_test_start <= 1) return;
     stat->wpm = (stat->nbr_correct * 60000)
               / (inp->time_since_test_start * 5);
 }
