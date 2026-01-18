@@ -18,7 +18,7 @@ void app_handle_new_test(AppContext* app)
 {
     // if (old test) cleanup old test
     statistics_reset(&app->statistics);
-    app->typing_test = typing_test_new_english();
+    app->typing_test = typing_test_new_english_200();
     app->ta_ctx = render_context_new(app->testarea.cont_win);
     wclear(app->ta_ctx.win);
     typing_test_execute_draw_queue(&app->typing_test, &app->ta_ctx);
@@ -33,13 +33,10 @@ void app_handle_new_test(AppContext* app)
 
 void app_handle_in_test(AppContext* app)
 {
+    // how can i do this without waiting for the input?
     InputEvent ev = get_input();
 
-    // how can i do this without waiting for the input?
-    if (app->typing_test.start_timestamp &&
-        now_ms() - app->typing_test.start_timestamp > app->typing_test.time_limit) {
-        // refactor to app->typing_test.is_finished which is a function pointer
-        // to a predicate that is different for quote and time
+    if (app->typing_test.is_finished(&app->typing_test)) {
         app->next_state = APP_TEST_FINISHED;
         return;
     }
@@ -75,12 +72,9 @@ void app_handle_in_test(AppContext* app)
         DrawCommand dc = draw_command_from_input(&inp);
         dc.execute(&dc, &app->ta_ctx);
 
-        if (app->ta_ctx.cx == 1 && app->ta_ctx.cy == 2)
-        {
-            bool scrolled = scroll_window_upwards(&app->ta_ctx);
-            if (scrolled)
-                typing_test_execute_draw_queue(&app->typing_test, &app->ta_ctx);
-        }
+        if (scroll_window_upwards(&app->ta_ctx))
+            typing_test_execute_draw_queue(&app->typing_test, &app->ta_ctx);
+
         ui_panel_curses_draw(&app->statistics_panel);
         wrefresh(app->statistics_panel.cont_win);
         wrefresh(app->testarea.cont_win);
@@ -90,18 +84,59 @@ void app_handle_in_test(AppContext* app)
     }
 }
 
+#include <stdlib.h>
+
+void app_play_replay(AppContext* app)
+{
+    // iterate over input_history
+    // create drawcommand from it
+    // if (sleep_time) sleep(sleep_time)
+    // dc.execute(&dc, &app->ta_ctx);
+    app->ta_ctx.cy = 1;
+    app->ta_ctx.cx = 1;
+
+    TypingTestInput *prev = NULL;
+    TypingTestInput *inp;
+
+    while ((inp = fifo_q_pop(&app->typing_test.input_history)))
+    {
+        int64_t sleep_time = 0;
+
+        if (prev)
+        {
+            sleep_time = inp->time_since_test_start - prev->time_since_test_start;
+            if (sleep_time > 0)
+                sleep_ms(sleep_time);
+        }
+
+        DrawCommand dc = draw_command_from_input(inp);
+        
+        dc.execute(&dc, &app->ta_ctx);
+        wrefresh(app->ta_ctx.win);
+
+        free(prev); // free only AFTER last use
+        prev = inp;
+    }
+
+free(prev);
+
+}
+
+
 void app_handle_test_finished(AppContext* app)
 {
+    snprintf(app->statistics.currword,
+             sizeof(app->statistics.currword),
+             "%s",
+             "test finished");
     ui_panel_curses_draw(&app->statistics_panel);
     wrefresh(app->statistics_panel.cont_win);
 
     wclear(app->ta_ctx.win);
     wrefresh(app->ta_ctx.win);
-    snprintf(app->statistics.currword,
-             sizeof(app->statistics.currword),
-             "%s",
-             "test finished");
 
+
+    app_play_replay(app);
     InputEvent ev = get_input();
     switch (ev.type)
     {
@@ -116,11 +151,6 @@ void app_handle_test_finished(AppContext* app)
     case INPUT_ILLEGAL:
         break;
     }
-}
-
-void app_play_replay(AppContext* app)
-{
-    (void) app;
 }
 
 void app_handle_quit(AppContext* app)

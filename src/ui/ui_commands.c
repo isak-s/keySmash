@@ -18,9 +18,8 @@ void change_chartype_color(chtype* ch, int color_pair)
 }
 
 void draw_correct_input_formatted_char(DrawCommand* self, RenderContext* ctx) {
-    (void)self;
-
-    chtype ch = mvwinch(ctx->win, ctx->cy, ctx->cx);
+    chtype ch = self->c;
+    //chtype ch = mvwinch(ctx->win, ctx->cy, ctx->cx);
     change_chartype_color(&ch, COLOR_CORRECT);
     mvwaddch(ctx->win, ctx->cy, ctx->cx, ch);
     increment_cursor(ctx);
@@ -28,8 +27,8 @@ void draw_correct_input_formatted_char(DrawCommand* self, RenderContext* ctx) {
 }
 
 void draw_incorrect_input_formatted_char(DrawCommand* self, RenderContext* ctx) {
-    (void) self;
-    chtype ch = mvwinch(ctx->win, ctx->cy, ctx->cx);
+    chtype ch = self->c;
+    //chtype ch = mvwinch(ctx->win, ctx->cy, ctx->cx);
     change_chartype_color(&ch, COLOR_INCORRECT);
     mvwaddch(ctx->win, ctx->cy, ctx->cx, ch);
     increment_cursor(ctx);

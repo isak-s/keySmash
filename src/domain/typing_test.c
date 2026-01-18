@@ -115,7 +115,7 @@ void typing_test_handle_input(TypingTest* tt, TypingTestInput* input)
     }
 
     typing_test_refill_buffer(tt);
-    fifo_q_push(&tt->input_history, &input, sizeof(TypingTestInput));
+    fifo_q_push(&tt->input_history, input, sizeof(TypingTestInput));
 }
 
 // add parameter words to exclude
@@ -145,13 +145,20 @@ int64_t typing_test_time_left(TypingTest* tt)
     return remaining;
 }
 
-TypingTest typing_test_new_english()
+bool time_exceeded(TypingTest* tt)
+{
+    return tt->start_timestamp &&
+           now_ms() - tt->start_timestamp > tt->time_limit;
+}
+
+TypingTest typing_test_new_english_200()
 {
     TypingTest tt = (TypingTest){
         .cursor = 0,
         .language = "english",
         .wordset = init_english_200_wordset(),
         .get_next_word = get_random_word_english_200,
+        .is_finished = time_exceeded,
         // .start_timestamp = now_ms(), is set upon first input
         .draw_queue = fifo_q_new(),
         .input_history = fifo_q_new(),

@@ -1,8 +1,6 @@
 #include "fifo_queue.h"
 #include <stdlib.h>
-#include <memory.h>
-
-#include <assert.h>
+#include <string.h>
 
 FifoQueue fifo_q_new()
 {
@@ -14,7 +12,11 @@ FifoQueue fifo_q_new()
 
 void fifo_q_destroy(FifoQueue* q)
 {
-    while (fifo_q_pop(q) != NULL) {}
+    void* cmd = fifo_q_pop(q);
+    while (cmd != NULL) {
+        free(cmd);
+        cmd = fifo_q_pop(q);
+    }
 }
 
 void fifo_q_push(FifoQueue* q, void* cmd, size_t size)
@@ -34,6 +36,8 @@ void fifo_q_push(FifoQueue* q, void* cmd, size_t size)
     }
 }
 
+//   Returns a heap-allocated copy of the pushed object.
+//   Caller owns the returned pointer and must free() it.
 void* fifo_q_pop(FifoQueue* q)
 {
     if (!q->first) return NULL;
