@@ -1,7 +1,7 @@
 CC := gcc
 
 # ---------- Flags ----------
-COMMON_CFLAGS := -Wall -Wextra -std=c99 -Isrc -Itests -Iunity/src
+COMMON_CFLAGS := -g -O0 -Wall -Wextra -std=c99 -Isrc -Itests -Iunity/src
 TEST_CFLAGS := $(COMMON_CFLAGS) -DUNITY_OUTPUT_COLOR
 LDFLAGS := -lncurses
 
