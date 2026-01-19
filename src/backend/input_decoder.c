@@ -50,6 +50,10 @@ InputEvent decode_input(int ch)
         ev.type = INPUT_MENU;
         ev.menu.type = M_TAB;
         return ev;
+    case ERR:
+        ev.type = INPUT_NONE;
+        ev.illegal.error_code = ch;
+        return ev;
     default:
         ev.type = INPUT_ILLEGAL;
         ev.illegal.error_code = ch;
@@ -57,7 +61,7 @@ InputEvent decode_input(int ch)
     }
 }
 
-/* This function will await until a char is inputted. Halts the rest of the program!!! */
+/* This function will await until a char is inputted. unless timeout is set!*/
 InputEvent get_input()
 {
     int ch = getch();

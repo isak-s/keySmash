@@ -8,6 +8,7 @@
 typedef enum {
     INPUT_TYPING,
     INPUT_MENU,
+    INPUT_NONE,
     INPUT_ILLEGAL
 } InputEventType;
 

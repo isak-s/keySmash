@@ -13,10 +13,15 @@ typedef enum {
     APP_NEW_TEST,
     APP_IN_TEST,
     APP_TEST_FINISHED,
+    APP_IN_REPLAY,
     APP_STATISTICS,
     APP_QUIT,
     APP_TERMINATED
 } AppState;
+
+typedef struct {
+    int64_t start_timestamp;
+} ReplayState;
 
 typedef struct {
     AppState state, next_state;
@@ -26,6 +31,7 @@ typedef struct {
     Statistics statistics;
     RenderContext ta_ctx;
     TypingTest typing_test;
+    ReplayState replay_state;
 } AppContext;
 
 void init_app(AppContext* app);
