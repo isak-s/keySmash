@@ -7,13 +7,14 @@
 #include "domain/clock_helper.h"
 #include "ui/ui_misc.h"
 
-
+// initial state
 void app_handle_startup(AppContext* app)
 {
     init_app(app);
     app->next_state = APP_NEW_TEST;
 }
 
+// transition state
 void app_handle_new_test(AppContext* app)
 {
     // if (old test) cleanup old test
@@ -31,6 +32,7 @@ void app_handle_new_test(AppContext* app)
     app->next_state = APP_IN_TEST;
 }
 
+// main game loop state
 void app_handle_in_test(AppContext* app)
 {
     if (app->typing_test.is_finished(&app->typing_test)) {
@@ -100,7 +102,6 @@ void app_handle_test_finished(AppContext* app)
     app->ta_ctx.cx = 1;
     app->ta_ctx.cy = 1;
     wrefresh(app->ta_ctx.win);
-    app->replay_state.enabled = true;
     app->next_state = APP_IN_REPLAY;
 }
 
@@ -132,7 +133,7 @@ void replay_single_input(AppContext* app)
     free(inp);
 }
 
-
+// play replay until user input
 void app_handle_replay(AppContext* app)
 {
     InputEvent ev = get_input();
@@ -153,6 +154,7 @@ void app_handle_replay(AppContext* app)
     }
 }
 
+// transition to shutdown
 void app_handle_quit(AppContext* app)
 {
     destroy_app(app);
