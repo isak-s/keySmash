@@ -8,6 +8,7 @@
 
 struct TypingTest;
 typedef char* (*RandomWordFn)(struct TypingTest*);
+typedef bool (*IsFinishedPredicate)(struct TypingTest*);
 
 typedef struct TypingTest {
     int64_t     start_timestamp;
@@ -20,14 +21,15 @@ typedef struct TypingTest {
     size_t   cursor;     // how many chars typed so far minus backspaces
 
     FifoQueue draw_queue;
-    FifoQueue input_history;
+    FifoQueue input_history;  // change this to a linked list to be able to watch replay multiple times
 
     char** wordset;
     RandomWordFn get_next_word;  // different implementation for quote and rand
+    IsFinishedPredicate is_finished;
 } TypingTest;
 
 
-TypingTest typing_test_new_english();
+TypingTest typing_test_new_english_200();
 
 void typing_test_handle_input(TypingTest* tt, TypingTestInput* input);
 

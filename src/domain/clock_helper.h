@@ -5,4 +5,6 @@
 
 int64_t now_ms(void);
 
+void sleep_ms(long ms);
+
 #endif

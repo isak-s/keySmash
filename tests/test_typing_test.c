@@ -13,7 +13,7 @@ void tearDown(void) {} // runs after each test
 
 void test_typing_test_initializes_with_valid_state(void)
 {
-    TypingTest tt = typing_test_new_english();
+    TypingTest tt = typing_test_new_english_200();
 
     TEST_ASSERT_EQUAL_STRING("english", tt.language);
     TEST_ASSERT_NOT_NULL(tt.wordset);
@@ -28,7 +28,7 @@ void test_typing_test_initializes_with_valid_state(void)
 
 void test_initial_buffer_contains_printable_text(void)
 {
-    TypingTest tt = typing_test_new_english();
+    TypingTest tt = typing_test_new_english_200();
 
     for (size_t i = 0; i < tt.buf_len; i++) {
         char c = typing_test_get_char(&tt, i);
@@ -41,7 +41,7 @@ void test_initial_buffer_contains_printable_text(void)
 
 void test_correct_input_advances_cursor(void)
 {
-    TypingTest tt = typing_test_new_english();
+    TypingTest tt = typing_test_new_english_200();
 
     char expected = typing_test_get_char(&tt, 0);
 
@@ -52,7 +52,7 @@ void test_correct_input_advances_cursor(void)
 }
 void test_incorrect_input_advances_cursor(void)
 {
-    TypingTest tt = typing_test_new_english();
+    TypingTest tt = typing_test_new_english_200();
 
 
     TypingTestInput inp = typing_test_process_char(&tt, 'q');
@@ -64,7 +64,7 @@ void test_incorrect_input_advances_cursor(void)
 
 void test_buffer_slides_after_threshold(void)
 {
-    TypingTest tt = typing_test_new_english();
+    TypingTest tt = typing_test_new_english_200();
 
     size_t original_start = tt.buf_start;
 
@@ -84,7 +84,7 @@ void test_buffer_slides_after_threshold(void)
 
 void test_buffer_refills_when_low(void)
 {
-    TypingTest tt = typing_test_new_english();
+    TypingTest tt = typing_test_new_english_200();
 
     tt.buf_len = TEXT_BUFFER_CAPACITY / 4;
 
@@ -96,7 +96,7 @@ void test_buffer_refills_when_low(void)
 
 void test_input_history_records_inputs(void)
 {
-    TypingTest tt = typing_test_new_english();
+    TypingTest tt = typing_test_new_english_200();
 
     TypingTestInput inp = {
         .inputted = 'a',

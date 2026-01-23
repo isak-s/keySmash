@@ -50,9 +50,14 @@ void redraw_cursor(RenderContext* ctx)
     wmove(ctx->win, ctx->cy, ctx->cx);
 }
 
+static inline bool should_scroll(RenderContext* ctx)
+{
+    return ctx->cx == 1 && ctx->cy == 2;
+}
+
 bool scroll_window_upwards(RenderContext* ctx)
 {
-    if (!ctx->cy) return false; // if we are already at the top, don't scroll!
+    if (!should_scroll(ctx)) return false;
     wscrl(ctx->win, 1);
     ctx->cy--;
     ctx->last_y_drawn--;

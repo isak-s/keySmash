@@ -58,12 +58,23 @@ void init_app_rendering(AppContext* app)
     ui_panel_curses_draw(&app->testarea);
 }
 
+void set_getch_non_blocking()
+{
+    timeout(10);
+}
+
+void set_getch_blocking()
+{
+    timeout(-1);
+}
+
 void init_app(AppContext* app)
 {
     init_curses();
     init_app_defaults(app);
     init_app_ui(app);
     init_app_rendering(app);
+    set_getch_non_blocking();
 }
 
 void destroy_app(AppContext* app)

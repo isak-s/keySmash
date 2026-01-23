@@ -10,6 +10,7 @@ int main(void) {
         case APP_NEW_TEST:      app_handle_new_test(&app);      break;
         case APP_IN_TEST:       app_handle_in_test(&app);       break;
         case APP_TEST_FINISHED: app_handle_test_finished(&app); break;
+        case APP_IN_REPLAY:     app_handle_replay(&app);        break;
         case APP_QUIT:          app_handle_quit(&app);          break;
         default:                                                break;
         }
