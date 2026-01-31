@@ -14,13 +14,20 @@ void app_handle_startup(AppContext* app)
     app->next_state = APP_NEW_TEST;
 }
 
+void cleanup_old_typing_test(AppContext* app)
+{
+    if (app->typing_test.initialized)
+        typing_test_destroy(&app->typing_test);
+}
+
 // transition state
 void app_handle_new_test(AppContext* app)
 {
-    // if (old test) cleanup old test
-    statistics_reset(&app->statistics);
+    cleanup_old_typing_test(app);
     app->typing_test = typing_test_new_english_200();
-    app->ta_ctx = render_context_new(app->testarea.cont_win);
+    statistics_reset(&app->statistics);
+    render_context_reset(&app->ta_ctx);
+
     wclear(app->ta_ctx.win);
     typing_test_execute_draw_queue(&app->typing_test, &app->ta_ctx);
     typing_test_get_curr_word(&app->typing_test, app->statistics.currword);

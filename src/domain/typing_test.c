@@ -164,6 +164,7 @@ TypingTest typing_test_new_english_200()
         .input_history = fifo_q_new(),
         .time_limit = 15 * 1000}; // 15 seconds
     typing_test_refill_buffer(&tt);
+    tt.initialized = true;
     //typing_test_init_draw_queue(&tt);
     return tt;
 }

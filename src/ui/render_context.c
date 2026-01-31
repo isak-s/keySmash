@@ -16,6 +16,15 @@ RenderContext render_context_new(WINDOW* win)
     };
 }
 
+void render_context_reset(RenderContext* ctx)
+{
+    ctx->cy = 1;
+    ctx->cx = 1;
+    ctx->last_x_drawn = 1;
+    ctx->last_y_drawn = 1;
+    ctx->nbr_scrolls = 0;
+}
+
 void increment_cursor(RenderContext* ctx)
 {
     // the cursor can never overflow.

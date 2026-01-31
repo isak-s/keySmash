@@ -11,6 +11,7 @@ typedef char* (*RandomWordFn)(struct TypingTest*);
 typedef bool (*IsFinishedPredicate)(struct TypingTest*);
 
 typedef struct TypingTest {
+    bool        initialized;
     int64_t     start_timestamp;
     int64_t     time_limit;  // in ms
     const char* language;

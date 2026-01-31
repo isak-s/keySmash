@@ -67,6 +67,7 @@ UIPanelCurses menu_main_create(int max_x)
     menu->width = max_x-10;
     menu->x = 5;  // pass these as parameters maybe
     menu->y = 2;
+    menu->selected = 3;
     menu->elements = elements;
 
     return ui_panel_curses_create(menu);

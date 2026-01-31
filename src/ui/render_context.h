@@ -16,6 +16,8 @@ typedef struct {
 
 RenderContext render_context_new(WINDOW* win);
 
+void render_context_reset(RenderContext* ctx);
+
 void increment_cursor(RenderContext* ctx);
 
 void decrement_cursor(RenderContext* ctx);
