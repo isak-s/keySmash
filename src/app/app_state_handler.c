@@ -8,6 +8,7 @@
 
 #include "ui/ui_commands.h"
 #include "ui/ui_misc.h"
+#include "ui/ui_helpers.h"
 
 // initial state
 void app_handle_startup(AppContext* app)
@@ -30,13 +31,13 @@ void app_handle_new_test(AppContext* app)
     statistics_reset(&app->statistics);
     render_context_reset(&app->ta_ctx);
 
-    wclear(app->ta_ctx.win);
+    clear_test_area(&app->ta_ctx);
     typing_test_execute_draw_queue(&app->typing_test, &app->ta_ctx);
     typing_test_get_curr_word(&app->typing_test, app->statistics.currword);
     ui_panel_curses_draw(&app->statistics_panel);
-    wrefresh(app->statistics_panel.cont_win);
+
     redraw_cursor(&app->ta_ctx);
-    wrefresh(app->testarea.cont_win);
+    refresh_test_area(&app->ta_ctx);
 
     app->next_state = APP_IN_TEST;
 }
@@ -54,7 +55,7 @@ void app_handle_in_test(AppContext* app)
         app->testarea.border_win,
         app->ta_ctx.max_x);
     redraw_cursor(&app->ta_ctx);
-    wrefresh(app->testarea.cont_win); // have to do this so that if we redraw time left we move the cursor away from it
+    refresh_test_area(&app->ta_ctx);
 
     InputEvent ev = get_input();
 
@@ -64,7 +65,8 @@ void app_handle_in_test(AppContext* app)
         handle_menu_input(&app->main_menu, &ev.menu, app);
         ui_panel_curses_draw(&app->main_menu);
         redraw_cursor(&app->ta_ctx);
-        wrefresh(app->testarea.cont_win);
+        refresh_test_area(&app->ta_ctx);
+
         return;
     case INPUT_TYPING:
         if (!app->typing_test.start_timestamp) {
@@ -88,8 +90,7 @@ void app_handle_in_test(AppContext* app)
             typing_test_execute_draw_queue(&app->typing_test, &app->ta_ctx);
 
         ui_panel_curses_draw(&app->statistics_panel);
-        wrefresh(app->statistics_panel.cont_win);
-        wrefresh(app->testarea.cont_win);
+        refresh_test_area(&app->ta_ctx);
         return;
     case INPUT_NONE:    return;
     case INPUT_ILLEGAL: return;
@@ -106,11 +107,10 @@ void app_handle_test_finished(AppContext* app)
              "%s",
              "test finished");
     ui_panel_curses_draw(&app->statistics_panel);
-    wrefresh(app->statistics_panel.cont_win);
-    wclear(app->ta_ctx.win);
+    clear_test_area(&app->ta_ctx);
     app->ta_ctx.cx = 1;
     app->ta_ctx.cy = 1;
-    wrefresh(app->ta_ctx.win);
+    refresh_test_area(&app->ta_ctx);
     app->next_state = APP_IN_REPLAY;
 }
 
@@ -137,7 +137,7 @@ void replay_single_input(AppContext* app)
 
     dc.execute(&dc, &app->ta_ctx);
     scroll_window_upwards(&app->ta_ctx);
-    wrefresh(app->ta_ctx.win);
+    refresh_test_area(&app->ta_ctx);
 
     free(inp);
 }
@@ -152,7 +152,7 @@ void app_handle_replay(AppContext* app)
         handle_menu_input(&app->main_menu, &ev.menu, app);
         ui_panel_curses_draw(&app->main_menu);
         redraw_cursor(&app->ta_ctx);
-        wrefresh(app->testarea.cont_win);
+        refresh_test_area(&app->ta_ctx);
         break;
     default: break;
     }
