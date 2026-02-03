@@ -8,4 +8,5 @@ void app_handle_in_test(AppContext* app);
 void app_handle_test_finished(AppContext* app);
 void app_handle_replay(AppContext* app);
 void app_handle_quit(AppContext* app);
+
 #endif

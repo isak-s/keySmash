@@ -1,6 +1,10 @@
 #ifndef INPUT_H
 #define INPUT_H
 
+#include "ui/ui_panel_curses.h"
+
+#include "app/app_context.h"
+
 /* handle special characters like tab and arrow keys.
 If alphanumerical, return a TypingTestInput */
 typedef enum {
@@ -16,5 +20,7 @@ typedef enum {
 typedef struct {
     MenuInputType type;
 } MenuInput;
+
+void handle_menu_input(UIPanelCurses* menu, MenuInput* inp, AppContext* app);
 
 #endif

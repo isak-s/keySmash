@@ -1,10 +1,12 @@
 #include "app_state_handler.h"
 
 #include "backend/input_decoder.h"
-#include "menu.h"
+#include "backend/menu_panel.h"
+
 #include "domain/typing_test.h"
-#include "ui/ui_commands.h"
 #include "domain/clock_helper.h"
+
+#include "ui/ui_commands.h"
 #include "ui/ui_misc.h"
 
 // initial state
