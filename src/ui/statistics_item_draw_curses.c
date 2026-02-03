@@ -1,9 +1,7 @@
 #include "statistics_item_draw_curses.h"
 
 #include "ui_panel_curses.h"
-
-// move stuff in this:
-#include "app/menu.h"
+#include "backend/statistics_panel.h"
 
 void statistics_menu_wpm_draw_adapter(UIElement* el, void* ctx)
 {

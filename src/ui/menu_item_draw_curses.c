@@ -3,7 +3,7 @@
 
 #include "string.h"
 // move these files:
-#include "app/menu.h"
+#include "backend/menu_panel.h"
 
 void menu_item_draw_adapter(UIElement* el, void* ctx) {
     UIPanelCurses* pc = ctx;

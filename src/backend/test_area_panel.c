@@ -1,8 +1,8 @@
-#include "test_area.h"
+#include "test_area_panel.h"
 #include "backend/ui_panel.h"
 #include <stdlib.h>
 
-UIPanelCurses test_area_create(int max_x, int min_y, int max_y)
+UIPanelCurses test_area_panel_create(int max_x, int min_y, int max_y)
 {
     UIPanel* ta = malloc(sizeof(UIPanel));
     // no elements. Maybe refactor?

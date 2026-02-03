@@ -1,9 +1,11 @@
 #include "app_context.h"
 #include "ncurses.h"
 
-#include "menu.h"
+#include "backend/menu_panel.h"
+#include "backend/statistics_panel.h"
+#include "backend/test_area_panel.h"
+
 #include "ui/ui_constants.h"
-#include "test_area.h"
 
 void init_curses()
 {
@@ -44,7 +46,7 @@ void init_app_ui(AppContext* app)
     int ta_y = app->main_menu.panel->element_count + UI_BORDER_PADDING * 2;
     int stat_y = max_y / 3 + ta_y;
 
-    app->testarea = test_area_create(max_x, ta_y, max_y);
+    app->testarea = test_area_panel_create(max_x, ta_y, max_y);
     app->statistics_panel = statistics_panel_create(max_x, stat_y, &app->statistics);
 
     init_app_color_sceme(app);
