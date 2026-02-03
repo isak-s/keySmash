@@ -1,6 +1,5 @@
 #include "input_decoder.h"
 #include <stdbool.h>
-#include <ncurses.h>
 
 static inline bool is_typing_char(int ch)
 {

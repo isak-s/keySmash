@@ -2,11 +2,12 @@
 #define APP_STATE_H
 
 #include "domain/typing_test_mode.h"
+#include "domain/statistics.h"
+#include "domain/typing_test.h"
+
 #include "ui/colors.h"
 #include "ui/ui_panel_curses.h"
 #include "ui/render_context.h"
-#include "domain/statistics.h"
-#include "domain/typing_test.h"
 
 typedef enum {
     APP_STARTUP,
