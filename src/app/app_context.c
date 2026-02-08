@@ -10,6 +10,7 @@
 void init_curses()
 {
     initscr();
+    set_escdelay(25);
     init_color_scheme(stdscr, TRON_ORANGE);
 
     cbreak();
@@ -31,6 +32,7 @@ void init_app_color_sceme(AppContext* app)
 void init_app_defaults(AppContext* app)
 {
     app->color_scheme = TRON_ORANGE;
+    // the ui will draw ENGLISH 200 regardless. Might want to refactor.
     app->typing_test_mode = ENGLISH_200;
     app->next_state = APP_NEW_TEST;
 }

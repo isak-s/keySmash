@@ -14,7 +14,8 @@ typedef enum {
     M_ARROW_RIGHT,
     M_TAB,
     M_SHIFT_TAB,
-    M_ENTER
+    M_ENTER,
+    M_ESCAPE,
 } MenuInputType;
 
 typedef struct {

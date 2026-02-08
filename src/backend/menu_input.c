@@ -17,9 +17,17 @@ void handle_menu_input(UIPanelCurses* menu, MenuInput* inp, AppContext* app)
             menu->panel->selected = menu->panel->element_count - 1;
         }
         break;
+    case M_ARROW_LEFT:
+        break;
+    case M_ARROW_RIGHT:
+        // MenuItem* item = menu->panel->elements[menu->panel->selected].impl;
+        break;
     case M_ENTER:
         MenuItem* item = menu->panel->elements[menu->panel->selected].impl;
         if (item->enabled) item->action(app);
+        break;
+    case M_ESCAPE:
+        app->next_state = APP_QUIT;
     default:
         break;
     }

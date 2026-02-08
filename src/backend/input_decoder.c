@@ -53,6 +53,10 @@ InputEvent decode_input(int ch)
         ev.type = INPUT_NONE;
         ev.illegal.error_code = ch;
         return ev;
+    case 27: //KEY_ESCAPE:
+        ev.type = INPUT_MENU;
+        ev.menu.type = M_ESCAPE;
+        return ev;
     default:
         ev.type = INPUT_ILLEGAL;
         ev.illegal.error_code = ch;
