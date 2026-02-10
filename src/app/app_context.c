@@ -7,8 +7,11 @@
 
 #include "ui/ui_constants.h"
 
+
+#include <locale.h>
 void init_curses()
 {
+    setlocale(LC_ALL, "");
     initscr();
     set_escdelay(25);
     init_color_scheme(stdscr, TRON_ORANGE);

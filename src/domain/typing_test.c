@@ -119,7 +119,7 @@ void typing_test_handle_input(TypingTest* tt, TypingTestInput* input)
 }
 
 // add parameter words to exclude
-char* get_random_word_english_200(TypingTest* self)
+char* get_random_word_200(TypingTest* self)
 {
     int i = rand() % 200;
     return self->wordset[i];
@@ -134,6 +134,19 @@ char** init_english_200_wordset()
     }
     srand(time(NULL));
     load_words("wordsets/english200.txt", wordset, 200, 20);
+
+    return wordset;
+}
+
+char** init_swedish_200_wordset()
+{
+    char** wordset = malloc(sizeof(char*) * 200);
+    for (int i = 0; i < 200; i++)
+    {
+        wordset[i] = malloc(20);
+    }
+    srand(time(NULL));
+    load_words("wordsets/swedish200.txt", wordset, 200, 20);
 
     return wordset;
 }
@@ -157,7 +170,7 @@ TypingTest typing_test_new_english_200()
         .cursor = 0,
         .language = "english",
         .wordset = init_english_200_wordset(),
-        .get_next_word = get_random_word_english_200,
+        .get_next_word = get_random_word_200,
         .is_finished = time_exceeded,
         // .start_timestamp = now_ms(), is set upon first input
         .draw_queue = fifo_q_new(),
@@ -167,6 +180,34 @@ TypingTest typing_test_new_english_200()
     tt.initialized = true;
     //typing_test_init_draw_queue(&tt);
     return tt;
+}
+
+TypingTest typing_test_new_swedish_200()
+{
+    TypingTest tt = (TypingTest){
+        .cursor = 0,
+        .language = "Swedish",
+        .wordset = init_swedish_200_wordset(),
+        .get_next_word = get_random_word_200,
+        .is_finished = time_exceeded,
+        // .start_timestamp = now_ms(), is set upon first input
+        .draw_queue = fifo_q_new(),
+        .input_history = fifo_q_new(),
+        .time_limit = 15 * 1000}; // 15 seconds
+    typing_test_refill_buffer(&tt);
+    tt.initialized = true;
+    //typing_test_init_draw_queue(&tt);
+    return tt;
+}
+
+TypingTest typing_test_new_by_mode(TypingTestMode mode)
+{
+    switch (mode)
+    {
+    case SWEDISH_200: return typing_test_new_swedish_200();
+    case ENGLISH_200:
+    default: return typing_test_new_english_200();
+    }
 }
 
 void typing_test_destroy(TypingTest* tt)

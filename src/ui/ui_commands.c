@@ -1,14 +1,28 @@
 #include "ui_commands.h"
 #include "colors.h"
 
+static void draw_wchar(
+    WINDOW *win,
+    int y,
+    int x,
+    wchar_t ch,
+    attr_t attrs,
+    short color_pair
+) {
+    cchar_t cc;
+    setcchar(&cc, &ch, attrs, color_pair, NULL);
+    mvwadd_wch(win, y, x, &cc);
+}
+
 void draw_default_formatted_char(DrawCommand* self, RenderContext* ctx)
 {
     // not needed. Used by default!!
     // self->c &= A_CHARTEXT;
     // self->c |= COLOR_PAIR(COLOR_PRIMARY);
-
-    mvwaddch(ctx->win, ctx->cy, ctx->cx, self->c);
+    draw_wchar(ctx->win, ctx->cy, ctx->cx, self->c, 0, COLOR_PRIMARY);
+    // mvwaddch(ctx->win, ctx->cy, ctx->cx, self->c);
     increment_cursor(ctx);
+    redraw_cursor(ctx); // remove all these?
 }
 
 void change_chartype_color(chtype* ch, int color_pair)
@@ -18,9 +32,10 @@ void change_chartype_color(chtype* ch, int color_pair)
 }
 
 void draw_correct_input_formatted_char(DrawCommand* self, RenderContext* ctx) {
-    chtype ch = self->c;
-    change_chartype_color(&ch, COLOR_CORRECT);
-    mvwaddch(ctx->win, ctx->cy, ctx->cx, ch);
+    // chtype ch = self->c;
+    //change_chartype_color(&ch, COLOR_CORRECT);
+    //mvwaddch(ctx->win, ctx->cy, ctx->cx, ch);
+    draw_wchar(ctx->win, ctx->cy, ctx->cx, self->c, 0, COLOR_CORRECT);
     increment_cursor(ctx);
     redraw_cursor(ctx);
 }

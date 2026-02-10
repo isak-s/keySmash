@@ -27,7 +27,7 @@ void cleanup_old_typing_test(AppContext* app)
 void app_handle_new_test(AppContext* app)
 {
     cleanup_old_typing_test(app);
-    app->typing_test = typing_test_new_english_200();
+    app->typing_test = typing_test_new_by_mode(app->typing_test_mode);
     statistics_reset(&app->statistics);
     render_context_reset(&app->ta_ctx);
 

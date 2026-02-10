@@ -4,6 +4,7 @@
 #include "storage/fifo_queue.h"
 #include "ui/render_context.h"
 #include "typing_test_input.h"
+#include "typing_test_mode.h"
 #define TEXT_BUFFER_CAPACITY 1028//512 //10 //512
 
 struct TypingTest;
@@ -30,7 +31,7 @@ typedef struct TypingTest {
 } TypingTest;
 
 
-TypingTest typing_test_new_english_200();
+TypingTest typing_test_new_by_mode(TypingTestMode mode);
 
 void typing_test_handle_input(TypingTest* tt, TypingTestInput* input);
 
