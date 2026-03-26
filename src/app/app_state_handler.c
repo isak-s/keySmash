@@ -133,7 +133,7 @@ void replay_single_input(AppContext* app)
     }
     // pop
     inp = fifo_q_pop(&app->typing_test.input_history);
-    DrawCommand dc = draw_command_from_input(inp);
+    DrawCommand dc = draw_command_from_input_in_replay(inp);
 
     dc.execute(&dc, &app->ta_ctx);
     scroll_window_upwards(&app->ta_ctx);

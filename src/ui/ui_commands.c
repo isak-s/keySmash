@@ -17,7 +17,8 @@ void change_chartype_color(chtype* ch, int color_pair)
     *ch |= COLOR_PAIR(color_pair);
 }
 
-void draw_correct_input_formatted_char(DrawCommand* self, RenderContext* ctx) {
+void draw_correct_input_formatted_char(DrawCommand* self, RenderContext* ctx)
+{
     chtype ch = self->c;
     change_chartype_color(&ch, COLOR_CORRECT);
     mvwaddch(ctx->win, ctx->cy, ctx->cx, ch);
@@ -25,9 +26,22 @@ void draw_correct_input_formatted_char(DrawCommand* self, RenderContext* ctx) {
     redraw_cursor(ctx);
 }
 
-void draw_incorrect_input_formatted_char(DrawCommand* self, RenderContext* ctx) {
+void draw_incorrect_input_formatted_char(DrawCommand* self, RenderContext* ctx)
+{
+    (void)* self;
     chtype ch = mvwinch(ctx->win, ctx->cy, ctx->cx);
-    ch = ((ch & A_CHARTEXT) == ' ') ? self->c : ch;
+    change_chartype_color(&ch, COLOR_INCORRECT);
+    mvwaddch(ctx->win, ctx->cy, ctx->cx, ch);
+    increment_cursor(ctx);
+    redraw_cursor(ctx);
+}
+// this behaviour gives me nightmares. It would be so clean to use
+// command pattern to replay the exact same inputs, but the drawing should be
+// different in the replay vs in test since we draw over chars in test
+// while every char inputted should be shown in the replay
+void draw_incorrect_input_formatted_char_in_replay(DrawCommand* self, RenderContext* ctx)
+{
+    chtype ch = self->c;
     change_chartype_color(&ch, COLOR_INCORRECT);
     mvwaddch(ctx->win, ctx->cy, ctx->cx, ch);
     increment_cursor(ctx);
@@ -39,6 +53,16 @@ void delete_prev_char(DrawCommand* self, RenderContext* ctx)
     (void)self;
     decrement_cursor(ctx);
     chtype ch = mvwinch(ctx->win, ctx->cy, ctx->cx);
+    change_chartype_color(&ch, COLOR_PRIMARY);
+    mvwaddch(ctx->win, ctx->cy, ctx->cx, ch);
+    redraw_cursor(ctx);
+}
+/* This one does delete however */
+void delete_prev_char_in_replay(DrawCommand* self, RenderContext* ctx)
+{
+    (void)self;
+    decrement_cursor(ctx);
+    chtype ch = ' ';
     change_chartype_color(&ch, COLOR_PRIMARY);
     mvwaddch(ctx->win, ctx->cy, ctx->cx, ch);
     redraw_cursor(ctx);
@@ -65,12 +89,26 @@ DrawCommand draw_incorrectly_inputted_command_new(char c) {
         .execute = draw_incorrect_input_formatted_char
     };
 }
-
-DrawCommand  new_delete_char_command()
+DrawCommand new_delete_char_command()
 {
     return (DrawCommand) {
         .c = (chtype)'\b',
         .execute = delete_prev_char
+    };
+}
+
+DrawCommand draw_incorrectly_inputted_in_replay_command_new(char c) {
+    return (DrawCommand) {
+        .c = (chtype)c,
+        .execute = draw_incorrect_input_formatted_char_in_replay
+    };
+}
+
+DrawCommand new_delete_char_in_replay_command()
+{
+    return (DrawCommand) {
+        .c = (chtype)'\b',
+        .execute = delete_prev_char_in_replay
     };
 }
 
@@ -80,6 +118,17 @@ DrawCommand draw_command_from_input(const TypingTestInput* inp)
         return new_delete_char_command();
     } else if (!inp->is_correct) {
         return draw_incorrectly_inputted_command_new(inp->inputted);
+    } else {
+        return draw_correctly_inputted_command_new(inp->inputted);
+    }
+}
+
+DrawCommand draw_command_from_input_in_replay(const TypingTestInput* inp)
+{
+    if (inp->is_backspace) {
+        return new_delete_char_in_replay_command();
+    } else if (!inp->is_correct) {
+        return draw_incorrectly_inputted_in_replay_command_new(inp->inputted);
     } else {
         return draw_correctly_inputted_command_new(inp->inputted);
     }

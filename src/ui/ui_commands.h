@@ -22,4 +22,6 @@ DrawCommand new_draw_char_command(char c);
 
 DrawCommand draw_command_from_input(const TypingTestInput* inp);
 
+DrawCommand draw_command_from_input_in_replay(const TypingTestInput* inp);
+
 #endif
