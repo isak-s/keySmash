@@ -13,7 +13,7 @@ void init_gruvbox_color_sceme()
 {
     init_pair(COLOR_PRIMARY, 111, 234);
     init_pair(COLOR_CORRECT, 108, 234);
-    init_pair(COLOR_INCORRECT, COLOR_RED, 234);
+    init_pair(COLOR_INCORRECT, COLOR_RED, 222);
 }
 
 void init_tron_orange_color_scheme()
@@ -27,7 +27,7 @@ void init_cyberpunk_fever_dream_color_scheme()
 {
     init_pair(COLOR_PRIMARY, COLOR_CYAN, -1);
     init_pair(COLOR_CORRECT, COLOR_MAGENTA, -1);
-    init_pair(COLOR_INCORRECT, COLOR_YELLOW, -1);
+    init_pair(COLOR_INCORRECT, COLOR_YELLOW, COLOR_RED);
 }
 
 void set_color_scheme(WINDOW* win, ColorScheme color_scheme)
