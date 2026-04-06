@@ -11,6 +11,7 @@
 
 typedef enum {
     APP_STARTUP,
+    APP_SET_COLOR,
     APP_NEW_TEST,
     APP_IN_TEST,
     APP_TEST_FINISHED,

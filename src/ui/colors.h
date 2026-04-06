@@ -3,11 +3,14 @@
 
 #include <ncurses.h>
 
+#define DEFAULT TRON_ORANGE
+
 typedef enum {
-    DEFAULT,
+    // DEFAULT,
     TRON_ORANGE,
     GRUVBOX,
-    CYBERPUNK_FEVER_DREAM
+    CYBERPUNK_FEVER_DREAM,
+    NBR_COLOR_SHEMES
 } ColorScheme;
 
 enum Color {

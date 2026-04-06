@@ -4,6 +4,7 @@
 
 #include "ui/ui_constants.h"
 #include "ui/menu_item_draw_curses.h"
+#include "ui/colors.h"
 
 #include <stdlib.h>
 
@@ -13,6 +14,12 @@
 #define RESTART_ROW 3
 #define QUIT_ROW 4
 
+void menu_item_cycle_color_scheme_action(AppContext* app)
+{
+    app->color_scheme += 1;
+    app->color_scheme %= NBR_COLOR_SHEMES;
+    app->next_state = APP_SET_COLOR;
+}
 void menu_item_restart_action(AppContext* app)
 {
     app->next_state = APP_NEW_TEST;
@@ -63,8 +70,8 @@ UIPanelCurses menu_main_create(int max_x)
     MenuItem title = {
         .row = TITLE_ROW,
         .text = "K-E-Y-S-M-A-S-H",
-        .enabled = false,
-        .action = menu_item_restart_action};
+        .enabled = true,
+        .action = menu_item_cycle_color_scheme_action};
     MenuItem statistics = {
         .row = STATISTICS_ROW,
         .text = "Statistics",

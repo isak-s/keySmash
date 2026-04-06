@@ -9,11 +9,32 @@
 #include "ui/ui_commands.h"
 #include "ui/ui_misc.h"
 #include "ui/ui_helpers.h"
+#include "ui/colors.h"
 
 // initial state
 void app_handle_startup(AppContext* app)
 {
     init_app(app);
+    app->next_state = APP_NEW_TEST;
+}
+
+void app_handle_set_color_scheme(AppContext* app)
+{
+    int scheme = app->color_scheme;
+    set_color_scheme(stdscr, app->color_scheme);
+    set_color_scheme(app->testarea.border_win, scheme);
+    set_color_scheme(app->testarea.cont_win, scheme);
+    set_color_scheme(app->main_menu.border_win, scheme);
+    set_color_scheme(app->main_menu.cont_win, scheme);
+    set_color_scheme(app->statistics_panel.border_win, scheme);
+    set_color_scheme(app->statistics_panel.cont_win, scheme);
+
+    wrefresh(stdscr);
+
+    ui_panel_curses_draw(&app->testarea);
+    ui_panel_curses_draw(&app->main_menu);
+    ui_panel_curses_draw(&app->statistics_panel);
+
     app->next_state = APP_NEW_TEST;
 }
 

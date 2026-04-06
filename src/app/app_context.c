@@ -11,7 +11,6 @@ void init_curses()
 {
     initscr();
     set_escdelay(25);
-    init_color_scheme(stdscr, TRON_ORANGE);
 
     cbreak();
     noecho();
@@ -21,6 +20,7 @@ void init_curses()
 
 void init_app_color_sceme(AppContext* app)
 {
+    init_color_scheme(stdscr, app->color_scheme);
     init_color_scheme(app->testarea.border_win, app->color_scheme);
     init_color_scheme(app->testarea.cont_win, app->color_scheme);
     init_color_scheme(app->main_menu.border_win, app->color_scheme);
