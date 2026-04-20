@@ -19,4 +19,4 @@ make run
 ## TODO
     - quote mode. Use curl to get a quote from some database and create a test with that string.
     - Set time (15, 30, 60)
-    - Add english 1000 wordset and refactor wordsets to be a C list instead of a file so that the binary can be used regardless of working directory.
+    - Add english 1000 wordset

@@ -55,18 +55,7 @@ void typing_test_refill_buffer(TypingTest* tt)
         typing_test_append_word(tt, next);
     }
 }
-/*
-void typing_test_init_draw_queue(TypingTest* tt)
-{
-    for (size_t i = 0; i < tt->buf_len; i++) {
-        char c = typing_test_get_char(tt, i);
-        if (c == '\0') return;
-        DrawCommand dc = new_draw_char_command(c);
-        fifo_q_push(&tt->draw_queue, &dc, sizeof(DrawCommand));
-    }
-}
-*/
-// when user is typing, we should shift everything once a line is completed so that we can print the rest. TODO for future
+
 void typing_test_execute_draw_queue(TypingTest* tt, RenderContext* ctx)
 {
     int prev_x = ctx->cx;
@@ -125,19 +114,6 @@ const char* get_random_word_english_200(TypingTest* self)
 {
     int i = rand() % 200;
     return self->wordset[i];
-}
-
-char** init_english_200_wordset()
-{
-    char** wordset = malloc(sizeof(char*) * 200);
-    for (int i = 0; i < 200; i++)
-    {
-        wordset[i] = malloc(20);
-    }
-    srand(time(NULL));
-    load_words("wordsets/english200.txt", wordset, 200, 20);
-
-    return wordset;
 }
 
 int64_t typing_test_time_left(TypingTest* tt)
