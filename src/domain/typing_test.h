@@ -7,7 +7,7 @@
 #define TEXT_BUFFER_CAPACITY 1028//512 //10 //512
 
 struct TypingTest;
-typedef char* (*RandomWordFn)(struct TypingTest*);
+typedef const char* (*RandomWordFn)(struct TypingTest*);
 typedef bool (*IsFinishedPredicate)(struct TypingTest*);
 
 typedef struct TypingTest {
@@ -24,7 +24,7 @@ typedef struct TypingTest {
     FifoQueue draw_queue;
     FifoQueue input_history;  // change this to a linked list to be able to watch replay multiple times
 
-    char** wordset;
+    const char** wordset;
     RandomWordFn get_next_word;  // different implementation for quote and rand
     IsFinishedPredicate is_finished;
 } TypingTest;

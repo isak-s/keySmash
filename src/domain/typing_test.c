@@ -6,6 +6,8 @@
 #include "ui/ui_commands.h"
 #include "clock_helper.h"
 
+#include "wordsets/english200.h"
+
 #include <time.h>
 
 char typing_test_get_char(const TypingTest* tt, size_t idx)
@@ -119,7 +121,7 @@ void typing_test_handle_input(TypingTest* tt, TypingTestInput* input)
 }
 
 // add parameter words to exclude
-char* get_random_word_english_200(TypingTest* self)
+const char* get_random_word_english_200(TypingTest* self)
 {
     int i = rand() % 200;
     return self->wordset[i];
@@ -156,7 +158,7 @@ TypingTest typing_test_new_english_200()
     TypingTest tt = (TypingTest){
         .cursor = 0,
         .language = "english",
-        .wordset = init_english_200_wordset(),
+        .wordset = english200,
         .get_next_word = get_random_word_english_200,
         .is_finished = time_exceeded,
         // .start_timestamp = now_ms(), is set upon first input
@@ -171,8 +173,8 @@ TypingTest typing_test_new_english_200()
 
 void typing_test_destroy(TypingTest* tt)
 {
-    for (int i = 0; i < 200; i++) free(tt->wordset[i]);
-    free(tt->wordset);
+    // for (int i = 0; i < 200; i++) free(tt->wordset[i]);
+    // free(tt->wordset); no longer needed since wordsets are const
     fifo_q_destroy(&tt->draw_queue);
     fifo_q_destroy(&tt->input_history);
 }
