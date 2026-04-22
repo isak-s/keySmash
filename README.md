@@ -19,4 +19,4 @@ make run
 ## TODO
     - quote mode. Use curl to get a quote from some database and create a test with that string.
     - Set time (15, 30, 60)
-    - Add english 1000 wordset
+        - there should be a number to the right (above time left) that is selectable with arrows like the other menuItems. Pressing enter cycles the time
