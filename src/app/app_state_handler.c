@@ -44,11 +44,21 @@ void cleanup_old_typing_test(AppContext* app)
         typing_test_destroy(&app->typing_test);
 }
 
+TypingTest new_typing_test(AppContext* app)
+{
+    switch (app->typing_test_mode)
+    {
+    case ENGLISH_1000: return typing_test_new_english_1000();
+    case ENGLISH_200:
+    default: return typing_test_new_english_200();
+    }
+}
+
 // transition state
 void app_handle_new_test(AppContext* app)
 {
     cleanup_old_typing_test(app);
-    app->typing_test = typing_test_new_english_200();
+    app->typing_test = new_typing_test(app);
     statistics_reset(&app->statistics);
     render_context_reset(&app->ta_ctx);
 

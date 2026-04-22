@@ -6,7 +6,7 @@
 #include "ui/ui_commands.h"
 #include "clock_helper.h"
 
-#include "wordsets/english200.h"
+#include "wordsets/wordsets.h"
 
 #include <time.h>
 
@@ -116,6 +116,12 @@ const char* get_random_word_english_200(TypingTest* self)
     return self->wordset[i];
 }
 
+const char* get_random_word_english_1000(TypingTest* self)
+{
+    int i = rand() % 1000;
+    return self->wordset[i];
+}
+
 int64_t typing_test_time_left(TypingTest* tt)
 {
     int64_t elapsed = tt->start_timestamp ? now_ms() - tt->start_timestamp : 0;
@@ -136,6 +142,24 @@ TypingTest typing_test_new_english_200()
         .language = "english",
         .wordset = english200,
         .get_next_word = get_random_word_english_200,
+        .is_finished = time_exceeded,
+        // .start_timestamp = now_ms(), is set upon first input
+        .draw_queue = fifo_q_new(),
+        .input_history = fifo_q_new(),
+        .time_limit = 15 * 1000}; // 15 seconds
+    typing_test_refill_buffer(&tt);
+    tt.initialized = true;
+    //typing_test_init_draw_queue(&tt);
+    return tt;
+}
+
+TypingTest typing_test_new_english_1000()
+{
+    TypingTest tt = (TypingTest){
+        .cursor = 0,
+        .language = "english",
+        .wordset = english1000,
+        .get_next_word = get_random_word_english_1000,
         .is_finished = time_exceeded,
         // .start_timestamp = now_ms(), is set upon first input
         .draw_queue = fifo_q_new(),

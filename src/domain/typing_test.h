@@ -32,6 +32,8 @@ typedef struct TypingTest {
 
 TypingTest typing_test_new_english_200();
 
+TypingTest typing_test_new_english_1000();
+
 void typing_test_handle_input(TypingTest* tt, TypingTestInput* input);
 
 void typing_test_execute_draw_queue(TypingTest* tt, RenderContext* ctx);

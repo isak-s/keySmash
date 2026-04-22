@@ -3,8 +3,8 @@
 typedef enum {
     ENGLISH_200,
     ENGLISH_1000,
-    ENGLISH_QUOTE,
-    SWEDISH_200,
+    //ENGLISH_QUOTE,
+    //SWEDISH_200,
 
     TYPING_TEST_MODE_COUNT
 } TypingTestMode;
