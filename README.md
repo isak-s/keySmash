@@ -16,6 +16,8 @@ You can also run the code with
 make run
 ```
 
+## State machine:
+![State machine diagram](state_diagram.png)
 ## TODO
     - quote mode. Use curl to get a quote from some database and create a test with that string.
     - Set time (15, 30, 60)
