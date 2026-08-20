@@ -1,8 +1,10 @@
 #ifndef TYPING_TEST_MODE_H
 #define TYPING_TEST_MODE_H
 typedef enum {
-    ENGLISH_200,
-    ENGLISH_1000,
+    ENGLISH_200_15_S,
+    ENGLISH_200_60_S,
+    ENGLISH_1000_15_S,
+    ENGLISH_1000_60_S,
     //ENGLISH_QUOTE,
     //SWEDISH_200,
 

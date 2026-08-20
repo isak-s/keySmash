@@ -48,9 +48,11 @@ TypingTest new_typing_test(AppContext* app)
 {
     switch (app->typing_test_mode)
     {
-    case ENGLISH_1000: return typing_test_new_english_1000();
-    case ENGLISH_200:
-    default: return typing_test_new_english_200();
+    case ENGLISH_1000_15_S: return typing_test_new_english_1000(15);
+    case ENGLISH_1000_60_S: return typing_test_new_english_1000(60);
+    case ENGLISH_200_60_S:  return typing_test_new_english_200(60);
+    case ENGLISH_200_15_S:
+    default: return typing_test_new_english_200(15);
     }
 }
 

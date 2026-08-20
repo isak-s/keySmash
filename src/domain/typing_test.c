@@ -135,7 +135,7 @@ bool time_exceeded(TypingTest* tt)
            now_ms() - tt->start_timestamp > tt->time_limit;
 }
 
-TypingTest typing_test_new_english_200()
+TypingTest typing_test_new_english_200(short time_limit_seconds)
 {
     TypingTest tt = (TypingTest){
         .cursor = 0,
@@ -146,14 +146,14 @@ TypingTest typing_test_new_english_200()
         // .start_timestamp = now_ms(), is set upon first input
         .draw_queue = fifo_q_new(),
         .input_history = fifo_q_new(),
-        .time_limit = 15 * 1000}; // 15 seconds
+        .time_limit = time_limit_seconds * 1000}; // use milliseconds
     typing_test_refill_buffer(&tt);
     tt.initialized = true;
     //typing_test_init_draw_queue(&tt);
     return tt;
 }
 
-TypingTest typing_test_new_english_1000()
+TypingTest typing_test_new_english_1000(short time_limit_seconds)
 {
     TypingTest tt = (TypingTest){
         .cursor = 0,
@@ -164,7 +164,7 @@ TypingTest typing_test_new_english_1000()
         // .start_timestamp = now_ms(), is set upon first input
         .draw_queue = fifo_q_new(),
         .input_history = fifo_q_new(),
-        .time_limit = 15 * 1000}; // 15 seconds
+        .time_limit = time_limit_seconds * 1000}; // 15 seconds
     typing_test_refill_buffer(&tt);
     tt.initialized = true;
     //typing_test_init_draw_queue(&tt);

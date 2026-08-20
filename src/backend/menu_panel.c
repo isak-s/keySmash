@@ -108,7 +108,7 @@ UIPanelCurses menu_main_create(int max_x)
     menu->y = 2;
     menu->selected = 3;
     menu->elements = elements;
-    update_mode_menu_item(elements[MODE_ROW].impl, ENGLISH_200);
+    update_mode_menu_item(elements[MODE_ROW].impl, ENGLISH_200_15_S);
 
     return ui_panel_curses_create(menu);
 }
