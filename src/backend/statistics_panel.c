@@ -14,13 +14,13 @@ UIElement ui_statistics_wpm_item_create(StatisticsItem* item)
     return el;
 }
 
-UIElement ui_statistics_incorrect_item_create(StatisticsItem* item)
+UIElement ui_statistics_accuracy_item_create(StatisticsItem* item)
 {
     StatisticsItem* copy = malloc(sizeof(StatisticsItem));
     *copy = *item;
     UIElement el;
     el.impl = copy;
-    el.draw = statistics_menu_incorrect_draw_adapter;
+    el.draw = statistics_menu_accuracy_draw_adapter;
     return el;
 }
 
@@ -39,12 +39,12 @@ UIPanelCurses statistics_panel_create(int max_x, int y, Statistics* stat)
     int element_count = 3;
 
     StatisticsItem word_count = { .row = 0, .text = "WPM: %d", .enabled = false, .stat = stat};
-    StatisticsItem incorrect_count = { .row = 1, .text = "INCORRECT: %d", .enabled = false, .stat = stat};
+    StatisticsItem accuracy = { .row = 1, .text = "ACCURACY: %.1f %%", .enabled = false, .stat = stat};
     StatisticsItem curr_word = { .row = 2, .text = "-| %s |-", .enabled = false, .stat = stat};
 
     UIElement* elements = malloc(sizeof(UIElement) * element_count);
     elements[0] = ui_statistics_wpm_item_create(&word_count);
-    elements[1] = ui_statistics_incorrect_item_create(&incorrect_count);
+    elements[1] = ui_statistics_accuracy_item_create(&accuracy);
     elements[2] = ui_statistics_currword_item_create(&curr_word);
     UIPanel * stat_panel = malloc(sizeof(UIPanel));
     stat_panel->element_count = element_count;
