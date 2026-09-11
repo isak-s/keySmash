@@ -59,21 +59,23 @@ TypingTest new_typing_test(AppContext* app)
         FetchedQuote fetched_quote = {
             .mutex = PTHREAD_MUTEX_INITIALIZER,
             .success = false,
-            .quote = "This is the example quote",
+            .quote = "Connections to api rejected!",
             .author = "No author",
             .millis_spent_fetching = 0,
         };
 
-//         pthread_t thread;
+        // It seems like the api is fast as fuck, so this doesn't need to be threaded actually.
+        // Kept in for coolness factor and future reference
+        pthread_t thread;
 
-        // pthread_create(
-            // &thread,
-            // NULL,
-            // fetch_quote_thread,
-            // &fetched_quote
-        // );
+        pthread_create(
+            &thread,
+            NULL,
+            fetch_quote_thread,
+            &fetched_quote
+        );
 
-        // pthread_join(thread, NULL);
+        pthread_join(thread, NULL);
 
         char* quote = fetched_quote.quote;
         // amount of words is amount of spaces plus one
@@ -92,7 +94,7 @@ TypingTest new_typing_test(AppContext* app)
         for (int i = 0; i < nbr_words; i++) {
             char* word = malloc(30 * sizeof(char)); // should make adaptive
             int j = 0;
-            for (; quote[pos] != ' '; j++) {
+            for (; quote[pos] != ' ' && quote[pos] != '\0'; j++) {
                 word[j] = quote[pos];
                 pos++;
             }
