@@ -2,6 +2,7 @@
 #define QUOTES_API_H
 
 #include <stdbool.h>
+#include <pthread.h>
 
 typedef struct  {
     pthread_mutex_t mutex;
@@ -15,7 +16,6 @@ typedef struct  {
     int millis_spent_fetching;
 } FetchedQuote;
 
-bool init_quote_api();
 void *fetch_quote_thread(void *arg);
 void cleanup_quote_api(void);
 

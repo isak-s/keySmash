@@ -267,15 +267,15 @@ static char *get_quote(void)
     }
 
 
-    printf(
-        "Size: %lu\n",
-        (unsigned long)chunk.size
-    );
+    // printf(
+        // "Size: %lu\n",
+        // (unsigned long)chunk.size
+    // );
 
-    printf(
-        "Data: %s\n",
-        chunk.memory
-    );
+    // printf(
+        // "Data: %s\n",
+        // chunk.memory
+    // );
 
     char *text_start = strstr(
         chunk.memory,
@@ -332,10 +332,10 @@ static char *get_quote(void)
     quote[len] = '\0';
 
 
-    printf(
-        "Quote: %s\n",
-        quote
-    );
+    // printf(
+        // "Quote: %s\n",
+        // quote
+    // );
 
 
     return quote;
@@ -359,10 +359,17 @@ char *fetch_quote(void)
 // Thread entry point.
 // takes the FetchedQuote shared struct and puts stuff in it,
     // respecting the mutex lock.
-void *fetch_quote_thread(void *arg)
+void *fetch_quote_thread(void* arg)
 {
-    (void)arg;
+    FetchedQuote *fetched_quote = (FetchedQuote*) arg;
 
+    pthread_mutex_lock(&fetched_quote->mutex);
+    fetched_quote->success = false;
+    fetched_quote->quote = "Fetching quote";
+    fetched_quote->author = "Isak Simonsson";
+    pthread_mutex_unlock(&fetched_quote->mutex);
+
+    // ignore millisfetched for now.
     char *quote = fetch_quote();
 
     if (quote != NULL) {
@@ -379,13 +386,12 @@ void *fetch_quote_thread(void *arg)
          *
          * Those operations will eventually need your mutex.
          */
+        pthread_mutex_lock(&fetched_quote->mutex);
+        fetched_quote->quote = quote;
+        fetched_quote->success = true;
+        pthread_mutex_unlock(&fetched_quote->mutex);
 
-        printf(
-            "Fetched quote: %s\n",
-            quote
-        );
-
-        free(quote);
+        //free(quote);
     }
 
     return NULL;
@@ -394,12 +400,14 @@ void *fetch_quote_thread(void *arg)
 
 int main(void)
 {
-    /*
-     * Initialize once.
-     */
-    if (!init_quote_api()) {
-        return EXIT_FAILURE;
-    }
+
+    FetchedQuote fetched_quote = {
+        .mutex = PTHREAD_MUTEX_INITIALIZER,
+        .success = false,
+        .quote = "fetching quote",
+        .author = "No author",
+        .millis_spent_fetching = 0,
+    };
 
     pthread_t thread;
 
@@ -407,11 +415,16 @@ int main(void)
         &thread,
         NULL,
         fetch_quote_thread,
-        NULL
+        &fetched_quote
     );
 
     pthread_join(thread, NULL);
 
+    //pthread_mutex_lock(&fetched_quote.mutex);
+    printf(
+        "Fetched quote: %s\n",
+        fetched_quote.quote);
+    //pthread_mutex_unlock(&fetched_quote.mutex);
     /*
      * Clean up once, at the very end.
      */
