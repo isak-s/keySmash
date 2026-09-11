@@ -11,6 +11,8 @@
 #include "ui/ui_helpers.h"
 #include "ui/colors.h"
 
+#include "domain/quotes_api.h"
+
 // initial state
 void app_handle_startup(AppContext* app)
 {
@@ -54,14 +56,52 @@ TypingTest new_typing_test(AppContext* app)
     case ENGLISH_1000_60_S: return typing_test_new_english_1000(60);
     case ENGLISH_200_60_S:  return typing_test_new_english_200(60);
     case ENGLISH_QUOTE: {
-        const char **wordset = malloc(5 * sizeof(char *));
-        wordset[0] = "this";
-        wordset[1] = "is";
-        wordset[2] = "a";
-        wordset[3] = "quote";
-        wordset[4] = "\0";
-        wordset[5] = "\0";
-        wordset[6] = "\0";
+        FetchedQuote fetched_quote = {
+            .mutex = PTHREAD_MUTEX_INITIALIZER,
+            .success = false,
+            .quote = "This is the example quote",
+            .author = "No author",
+            .millis_spent_fetching = 0,
+        };
+
+//         pthread_t thread;
+
+        // pthread_create(
+            // &thread,
+            // NULL,
+            // fetch_quote_thread,
+            // &fetched_quote
+        // );
+
+        // pthread_join(thread, NULL);
+
+        char* quote = fetched_quote.quote;
+        // amount of words is amount of spaces plus one
+        int spaces = 0;
+        for (int i = 0; quote[i] != '\0'; i++) {
+            if (quote[i] == ' ') {
+                spaces++;
+            }
+        }
+        int nbr_words = spaces + 1;
+
+        // one additional word for the null terminator word
+        const char **wordset = malloc((nbr_words + 1) * sizeof(char *));
+        // copy word by word into wordset
+        int pos = 0;
+        for (int i = 0; i < nbr_words; i++) {
+            char* word = malloc(30 * sizeof(char)); // should make adaptive
+            int j = 0;
+            for (; quote[pos] != ' '; j++) {
+                word[j] = quote[pos];
+                pos++;
+            }
+            word[j] = '\0';
+            pos++;
+            wordset[i] = word;
+        }
+        wordset[nbr_words] = "\0";
+
         return typing_test_new_english_quote(wordset);
     }
     case ENGLISH_200_15_S:

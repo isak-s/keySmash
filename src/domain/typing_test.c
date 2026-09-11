@@ -136,7 +136,7 @@ int64_t typing_test_time_left(TypingTest* tt)
 {
     int64_t elapsed = tt->start_timestamp ? now_ms() - tt->start_timestamp : 0;
     int64_t remaining = tt->time_limit - elapsed;
-    return abs(remaining);
+    return abs((int) remaining);
 }
 
 bool time_exceeded(TypingTest* tt)
@@ -147,6 +147,7 @@ bool time_exceeded(TypingTest* tt)
 
 bool no_text_left(TypingTest* tt)
 {
+    (void)* tt;
     return false;  // TODO
 }
 
