@@ -44,6 +44,8 @@ void cleanup_old_typing_test(AppContext* app)
         typing_test_destroy(&app->typing_test);
 }
 
+#include <stdlib.h>
+
 TypingTest new_typing_test(AppContext* app)
 {
     switch (app->typing_test_mode)
@@ -51,6 +53,17 @@ TypingTest new_typing_test(AppContext* app)
     case ENGLISH_1000_15_S: return typing_test_new_english_1000(15);
     case ENGLISH_1000_60_S: return typing_test_new_english_1000(60);
     case ENGLISH_200_60_S:  return typing_test_new_english_200(60);
+    case ENGLISH_QUOTE: {
+        const char **wordset = malloc(5 * sizeof(char *));
+        wordset[0] = "this";
+        wordset[1] = "is";
+        wordset[2] = "a";
+        wordset[3] = "quote";
+        wordset[4] = "\0";
+        wordset[5] = "\0";
+        wordset[6] = "\0";
+        return typing_test_new_english_quote(wordset);
+    }
     case ENGLISH_200_15_S:
     default: return typing_test_new_english_200(15);
     }

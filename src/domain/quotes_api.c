@@ -398,7 +398,7 @@ void *fetch_quote_thread(void* arg)
 }
 
 
-int main(void)
+int rename_to_main_main(void)
 {
 
     FetchedQuote fetched_quote = {

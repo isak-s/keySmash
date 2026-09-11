@@ -7,6 +7,7 @@
 #include "clock_helper.h"
 
 #include "wordsets/wordsets.h"
+#include "quotes_api.h"
 
 #include <time.h>
 
@@ -122,17 +123,31 @@ const char* get_random_word_english_1000(TypingTest* self)
     return self->wordset[i];
 }
 
+static int wordIdx;  // ugly as fuck but i'm lazy
+const char* get_next_word_in_quote(TypingTest* self) {
+    if (self->wordset[wordIdx][0] == '\0') {
+        return "\0";
+    }
+    return self->wordset[wordIdx++];
+}
+
+// abs so that it counts up in quote mode since the remaining time will always be 0 - elapsed.
 int64_t typing_test_time_left(TypingTest* tt)
 {
     int64_t elapsed = tt->start_timestamp ? now_ms() - tt->start_timestamp : 0;
     int64_t remaining = tt->time_limit - elapsed;
-    return remaining;
+    return abs(remaining);
 }
 
 bool time_exceeded(TypingTest* tt)
 {
     return tt->start_timestamp &&
            now_ms() - tt->start_timestamp > tt->time_limit;
+}
+
+bool no_text_left(TypingTest* tt)
+{
+    return false;  // TODO
 }
 
 TypingTest typing_test_new_english_200(short time_limit_seconds)
@@ -165,6 +180,28 @@ TypingTest typing_test_new_english_1000(short time_limit_seconds)
         .draw_queue = fifo_q_new(),
         .input_history = fifo_q_new(),
         .time_limit = time_limit_seconds * 1000}; // 15 seconds
+    typing_test_refill_buffer(&tt);
+    tt.initialized = true;
+    //typing_test_init_draw_queue(&tt);
+    return tt;
+}
+TypingTest typing_test_new_english_quote(const char* wordset[])
+{
+    // take the quote from the quote struct and make a wordset out of it
+    // sequential list of words containing the quote in order
+    // Start thread.
+    // populate once loaded
+    wordIdx = 0;
+    TypingTest tt = (TypingTest){
+        .cursor = 0,
+        .language = "english",
+        .wordset = wordset,
+        .get_next_word = get_next_word_in_quote,
+        .is_finished = no_text_left,
+        // .start_timestamp = now_ms(), is set upon first input
+        .draw_queue = fifo_q_new(),
+        .input_history = fifo_q_new(),
+        .time_limit = 0};
     typing_test_refill_buffer(&tt);
     tt.initialized = true;
     //typing_test_init_draw_queue(&tt);

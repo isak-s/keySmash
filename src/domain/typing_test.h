@@ -34,6 +34,8 @@ TypingTest typing_test_new_english_200(short time_limit_seconds);
 
 TypingTest typing_test_new_english_1000(short time_limit_seconds);
 
+TypingTest typing_test_new_english_quote(const char* wordset[]);
+
 void typing_test_handle_input(TypingTest* tt, TypingTestInput* input);
 
 void typing_test_execute_draw_queue(TypingTest* tt, RenderContext* ctx);
